@@ -26,9 +26,9 @@ lm_logits = outputs.logits
 print(lm_logits)
 
 shift_logits = lm_logits[..., :-1, :].contiguous()
-shift_logits = cat(shift_logits)
+shift_logits = cat([shift_logits[0], shift_logits[1]])
 shift_labels = labels[..., 1:].contiguous()  # Flatten the tokens
-shift_labels = cat(shift_labels)
+shift_labels = cat([shift_labels[0], shift_labels[1]])
 loss_fct = CrossEntropyLoss(ignore_index=-1)
 loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
 print(loss)
