@@ -23,7 +23,7 @@ inputs = {
 }
 
 
-def test(inputs, input_len):
+def test(inputs, input_len, output_len):
     outputs = model(**inputs)
     print("Default loss:", outputs.loss)
     labels = inputs["labels"]
@@ -38,7 +38,7 @@ def test(inputs, input_len):
     loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
     print("Total loss:", loss)
 
-    shift_logits = lm_logits[..., :-input_len, :].contiguous()
+    shift_logits = lm_logits[..., :-output_len, :].contiguous()
     print(shift_logits)
     shift_labels = labels[..., input_len:].contiguous()  # Flatten the tokens
     print(shift_labels)
@@ -46,4 +46,4 @@ def test(inputs, input_len):
     loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
     print("Output loss:", loss)
 
-test(inputs, input_len)
+test(inputs, input_len, output_len)
