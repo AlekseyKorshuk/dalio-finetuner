@@ -34,5 +34,17 @@ shift_labels = cat([tensor(data, device="cuda:0") for data in shift_labels])
 
 loss_fct = CrossEntropyLoss(ignore_index=-1)
 loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+print(loss)
 
+labels = inputs["labels"]
+lm_logits = outputs.logits
+shift_logits = lm_logits[..., :-1, :].contiguous()
+
+shift_labels = labels[..., 1:].contiguous()
+for i in range(len(shift_labels)):
+    for j in range(0, len(shift_labels[i]) - output_lengths[i]):
+        shift_labels[i][j] = -100
+
+loss_fct = CrossEntropyLoss(ignore_index=-100)
+loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
 print(loss)
