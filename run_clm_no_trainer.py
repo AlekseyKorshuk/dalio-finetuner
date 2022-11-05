@@ -329,6 +329,7 @@ def main():
     if args.dataset_name is not None:
         # Downloading and loading a dataset from the hub.
         raw_datasets = load_dataset(args.dataset_name, args.dataset_config_name)
+        raw_datasets["train"] = raw_datasets["train"][:2318]
         if "validation" not in raw_datasets.keys():
             raw_datasets["validation"] = load_dataset(
                 args.dataset_name,
@@ -352,7 +353,6 @@ def main():
             extension = "text"
             dataset_args["keep_linebreaks"] = not args.no_keep_linebreaks
         raw_datasets = load_dataset(extension, data_files=data_files, **dataset_args)
-        raw_datasets["train"] = raw_datasets["train"][:2318]
         # If no validation data is there, validation_split_percentage will be used to divide the dataset.
         if "validation" not in raw_datasets.keys():
             raw_datasets["validation"] = load_dataset(
