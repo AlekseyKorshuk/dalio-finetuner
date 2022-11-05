@@ -4,6 +4,7 @@ from torch import tensor
 
 model = AutoModelForCausalLM.from_pretrained("gpt2").to(0)
 tokenizer = AutoTokenizer.from_pretrained("gpt2")
+tokenizer.pad_token = tokenizer.eos_token
 
 data = ["User", "User:"]
 inputs = tokenizer(data, return_tensors="pt", padding=True, padding_side="left").to(0)
