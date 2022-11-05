@@ -16,7 +16,7 @@ output_lengths = [len(tokenizer(output_string).input_ids) for output_string in o
 for i in range(len(inputs["labels"])):
     for j in range(0, len(inputs["labels"]) - output_lengths[i]):
         inputs["labels"][i][j] = -100
-
+print(inputs)
 outputs = model(**inputs)
 print(outputs.loss)
 
