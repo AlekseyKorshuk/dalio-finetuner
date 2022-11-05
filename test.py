@@ -65,4 +65,4 @@ def test(inputs, input_len):
     print("Output loss:", loss)
 
 
-# test(inputs, input_len)
+test(inputs, input_len)
