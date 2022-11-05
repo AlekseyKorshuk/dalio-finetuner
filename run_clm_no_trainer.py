@@ -245,9 +245,9 @@ def parse_args():
 def generate_table(model, tokenizer):
     print("Generating table...")
     samples = [
-        "This is",
-        "How are you",
-        "Today is",
+        "Robert Boulter is",
+        "In 2006 , Boulter starred",
+        "Homarus gammarus , known",
         "Elon Musk is"
     ]
     table = {
