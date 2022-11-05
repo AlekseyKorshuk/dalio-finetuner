@@ -239,6 +239,19 @@ def parse_args():
     return args
 
 
+
+def generate_table(model, tokenizer):
+    samples = [
+        "This is",
+        "How are you",
+        "Today is",
+        "Elon Musk is"
+    ]
+    for sample in samples:
+        inputs = tokenizer(sample, return_tensors="pt").to(0)
+        output_ids = model.generate(**inputs)
+
+
 def main():
     args = parse_args()
 
@@ -572,6 +585,36 @@ def main():
     # update the progress_bar if load from checkpoint
     progress_bar.update(starting_epoch * num_update_steps_per_epoch)
     completed_steps = starting_epoch * num_update_steps_per_epoch
+
+    model.eval()
+    losses = []
+    for step, batch in enumerate(eval_dataloader):
+        with torch.no_grad():
+            outputs = model(**batch)
+
+        loss = outputs.loss
+        losses.append(accelerator.gather_for_metrics(loss.repeat(args.per_device_eval_batch_size)))
+
+    losses = torch.cat(losses)
+    try:
+        eval_loss = torch.mean(losses)
+        perplexity = math.exp(eval_loss)
+    except OverflowError:
+        perplexity = float("inf")
+
+    logger.info(f"epoch {0}: perplexity: {perplexity} eval_loss: {eval_loss}")
+
+    if args.with_tracking:
+        accelerator.log(
+            {
+                "perplexity": perplexity,
+                "eval_loss": eval_loss,
+                "train_loss": 0 / len(train_dataloader),
+                "epoch": 0,
+                "step": completed_steps,
+            },
+            step=completed_steps,
+        )
 
     for epoch in range(starting_epoch, args.num_train_epochs):
         model.train()
