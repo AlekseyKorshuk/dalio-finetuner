@@ -342,6 +342,7 @@ def main():
                 args.dataset_config_name,
                 split=f"train[{args.validation_split_percentage}%:]",
             )
+            raw_datasets["train"] = raw_datasets["train"][:2318]
     else:
         data_files = {}
         dataset_args = {}
