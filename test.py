@@ -7,7 +7,7 @@ tokenizer = AutoTokenizer.from_pretrained("gpt2")
 input_str = "User: Hello, how are you?\nBot:"
 output_str = ""
 
-inputs = tokenizer(input_str, return_tensors="pt").to()
+inputs = tokenizer(input_str, return_tensors="pt").to(0)
 
 # inputs = {
 #     "input_ids": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
