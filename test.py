@@ -72,7 +72,9 @@ def test(inputs, input_len):
     print("Total loss:", loss)
 
     shift_logits = lm_logits[..., :-input_len, :].contiguous()
+    print(shift_logits)
     shift_labels = labels[..., input_len:].contiguous()  # Flatten the tokens
+    print(shift_labels)
     loss_fct = CrossEntropyLoss()
     loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
     print("Output loss:", loss)
