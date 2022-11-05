@@ -14,7 +14,7 @@ inputs = tokenizer(data, return_tensors="pt", padding=True).to(0)
 inputs["labels"] = tensor(inputs.input_ids.tolist().copy(), device="cuda:0")
 print(inputs)
 
-output_lengths = [len(tokenizer(output_string).input_ids[0]) for output_string in output_strings]
+output_lengths = [len(tokenizer(output_string).input_ids) for output_string in output_strings]
 
 outputs = model(**inputs)
 
