@@ -463,7 +463,7 @@ def main():
     ids = [0, 1, 2]
     # Log a few random samples from the training set:
     for index in ids:
-        logger.info(f"Sample {index} of the merged training set: {train_dataset[index]}.")
+        logger.info(f"Sample {index} of the merged training set: {train_dataset[index]['input_ids']}.")
 
     # DataLoaders creation:
     train_dataloader = DataLoader(
