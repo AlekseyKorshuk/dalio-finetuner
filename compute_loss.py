@@ -34,27 +34,29 @@ loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(
 print(loss)
 
 
-# shift_logits = lm_logits[..., :-1, :].contiguous()
-# print(shift_logits.size())
-# shift_logits = shift_logits.tolist()
-# for i in range(len(shift_logits)):
-#     shift_logits[i] = shift_logits[i][-output_lengths[i]:]
-# shift_logits = tensor(shift_logits, device="cuda:0")
-# print(shift_logits.size())
-#
-#
-# shift_labels = labels[..., 1:].contiguous()  # Flatten the tokens
+shift_logits = lm_logits[..., :-1, :].contiguous()
+print(shift_logits.size())
+shift_logits = shift_logits.tolist()
+for i in range(len(shift_logits)):
+    shift_logits[i] = shift_logits[i][-output_lengths[i]:]
+shift_logits = tensor(shift_logits, device="cuda:0")
+shift_logits = cat([data for data in shift_logits])
+print(shift_logits.size())
+
+
+shift_labels = labels[..., 1:].contiguous()  # Flatten the tokens
+print(shift_labels.size())
+shift_labels = shift_labels.tolist()
+for i in range(len(shift_labels)):
+    shift_labels[i] = shift_labels[i][-output_lengths[i]:]
+shift_labels = tensor(shift_labels, device="cuda:0")
+shift_labels = cat([data for data in shift_labels])
+print(shift_labels.size())
+# print(shift_labels_test)
 # print(shift_labels.size())
-# shift_labels = shift_labels.tolist()
-# for i in range(len(shift_labels)):
-#     shift_labels[i] = shift_labels[i][-output_lengths[i]:]
-# shift_labels = tensor(shift_labels, device="cuda:0")
-# print(shift_labels.size())
-# # print(shift_labels_test)
-# # print(shift_labels.size())
-# loss_fct = CrossEntropyLoss(ignore_index=-1)
-# loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
-# print(loss)
+loss_fct = CrossEntropyLoss(ignore_index=-1)
+loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+print(loss)
 
 #
 # outputs = tokenizer(output_strings, return_tensors="pt", padding=False).to(0)
