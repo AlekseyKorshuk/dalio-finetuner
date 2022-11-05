@@ -12,7 +12,7 @@ inputs["labels"] = tensor(inputs["input_ids"].tolist().copy(), device="cuda:0")
 print(inputs)
 
 
-generated_output_ids = model.generate(**inputs, max_new_tokens=3, min_new_tokens=3, do_sample=False)
+generated_output_ids = model.generate(**inputs, max_new_tokens=3, do_sample=False)
 print(generated_output_ids)
 
 outputs = model(**inputs)
