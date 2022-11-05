@@ -30,6 +30,19 @@ outputs = model(**inputs)
 print(outputs.logits.size())
 print(outputs.logits[0])
 
+inputs = {
+    'input_ids': tensor([[12982, 25, 18435, 11, 703, 389, 345, 30, 198, 20630, 25,
+                          314, 1101, 257, 10214, 13]],
+                        device='cuda:0'),
+    'attention_mask': tensor([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                               1, 1, 1, 1, 1]], device='cuda:0'),
+    'labels': tensor([[12982, 25, 18435, 11, 703, 389, 345, 30, 198, 20630, 25,
+                       314, 1101, 257, 10214, 13]], device='cuda:0')
+}
+outputs = model(**inputs)
+print(outputs.logits.size())
+print(outputs.logits[0])
+
 
 def test(inputs, input_len):
     outputs = model(**inputs)
