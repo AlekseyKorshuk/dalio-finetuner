@@ -6,8 +6,8 @@ model = AutoModelForCausalLM.from_pretrained("gpt2").to(0)
 tokenizer = AutoTokenizer.from_pretrained("gpt2")
 
 input_string = "User:"
-
-inputs = tokenizer(input_string, return_tensors="pt").to(0)
+batch_size = 2
+inputs = tokenizer([input_string] * batch_size, return_tensors="pt").to(0)
 input_len = len(inputs["input_ids"][0])
 print("Input length:", input_len)
 inputs["labels"] = inputs["input_ids"]
@@ -18,7 +18,7 @@ print("Output length:", output_len)
 
 inputs = {
     'input_ids': outputs,
-    'attention_mask': tensor([[1] * (input_len + output_len)], device='cuda:0'),
+    'attention_mask': tensor([[1] * (input_len + output_len)] * batch_size, device='cuda:0'),
     'labels': outputs
 }
 
