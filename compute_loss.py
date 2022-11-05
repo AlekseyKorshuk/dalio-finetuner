@@ -8,7 +8,7 @@ tokenizer.pad_token = tokenizer.eos_token
 
 data = ["User", "User:"]
 inputs = tokenizer(data, return_tensors="pt", padding=True).to(0)
-inputs["labels"] = tensor(list(inputs["input_ids"]).copy())
+inputs["labels"] = tensor(inputs["input_ids"].to_numpy().copy())
 inputs["labels"][0][0] = 233
 print(inputs)
 
