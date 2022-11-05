@@ -4,30 +4,35 @@ import torch
 model = AutoModelForCausalLM.from_pretrained("gpt2").to(0)
 tokenizer = AutoTokenizer.from_pretrained("gpt2")
 
-inputs = {
-    "input_ids": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
-    "attention_mask": torch.tensor([1, 1, 1, 1, 1], device="cuda:0"),
-    "labels": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
-}
+input_str = "User: Hello, how are you?\nBot:"
+output_str = ""
+
+inputs = tokenizer(input_str, return_tensors="pt").to()
+
+# inputs = {
+#     "input_ids": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
+#     "attention_mask": torch.tensor([1, 1, 1, 1, 1], device="cuda:0"),
+#     "labels": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
+# }
 print(inputs)
 outputs = model(**inputs)
 print(outputs.loss)
 
-
-inputs = {
-    "input_ids": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
-    "attention_mask": torch.tensor([1, 1, 1, 1, 1], device="cuda:0"),
-    "labels": torch.tensor([0, 0, 0, 0, 123], device="cuda:0"),
-}
-print(inputs)
-outputs = model(**inputs)
-print(outputs.loss)
-
-inputs = {
-    "input_ids": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
-    "attention_mask": torch.tensor([1, 1, 1, 1, 0], device="cuda:0"),
-    "labels": torch.tensor([0, 0, 0, 0, 123], device="cuda:0"),
-}
-print(inputs)
-outputs = model(**inputs)
-print(outputs.loss)
+#
+# inputs = {
+#     "input_ids": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
+#     "attention_mask": torch.tensor([1, 1, 1, 1, 1], device="cuda:0"),
+#     "labels": torch.tensor([0, 0, 0, 0, 123], device="cuda:0"),
+# }
+# print(inputs)
+# outputs = model(**inputs)
+# print(outputs.loss)
+#
+# inputs = {
+#     "input_ids": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
+#     "attention_mask": torch.tensor([1, 1, 1, 1, 0], device="cuda:0"),
+#     "labels": torch.tensor([0, 0, 0, 0, 123], device="cuda:0"),
+# }
+# print(inputs)
+# outputs = model(**inputs)
+# print(outputs.loss)
