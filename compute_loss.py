@@ -6,13 +6,14 @@ model = AutoModelForCausalLM.from_pretrained("gpt2").to(0)
 tokenizer = AutoTokenizer.from_pretrained("gpt2", padding_side="left")
 tokenizer.pad_token = tokenizer.eos_token
 
-data = ["User", "User:"]
+data = ["User: This is me! How are", "User:"]
 inputs = tokenizer(data, return_tensors="pt", padding=True).to(0)
 inputs["labels"] = tensor(inputs["input_ids"].tolist().copy(), device="cuda:0")
 print(inputs)
 
+input_len = len(inputs["input_ids"][0])
 
-generated_output_ids = model.generate(**inputs, max_new_tokens=3, do_sample=False)
+generated_output_ids = model.generate(**inputs, max_new_tokens=3, do_sample=False, eos_token_id=198)
 print(generated_output_ids)
 
 outputs = model(**inputs)
@@ -27,3 +28,12 @@ shift_labels = labels[..., 1:].contiguous()  # Flatten the tokens
 loss_fct = CrossEntropyLoss(ignore_index=-1)
 loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
 print(loss)
+
+
+shift_logits = lm_logits[..., input_len - 1:-1, :].contiguous()
+print(shift_logits)
+shift_labels = labels[..., input_len:].contiguous()  # Flatten the tokens
+print(shift_labels)
+loss_fct = CrossEntropyLoss(ignore_index=-1)
+loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+print("Output loss:", loss)
