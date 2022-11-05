@@ -27,11 +27,11 @@ outputs = model(**inputs)
 print(outputs.loss)
 labels = inputs["labels"]
 lm_logits = outputs.logits
-print(len(lm_logits))
+print(lm_logits.size())
 shift_logits = lm_logits[..., :-1, :].contiguous()
-print(shift_logits.size)
+print(shift_logits.size())
 shift_labels = labels[..., 1:].contiguous()
-print(len(shift_labels))
+print(shift_labels.size())
 # Flatten the tokens
 loss_fct = CrossEntropyLoss()
 loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
