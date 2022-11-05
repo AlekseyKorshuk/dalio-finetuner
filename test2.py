@@ -46,4 +46,4 @@ def test(inputs, input_len):
     loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
     print("Output loss:", loss)
 
-test(inputs, output_len)
+test(inputs, input_len)
