@@ -26,21 +26,6 @@ inputs = {
     'labels': tensor([[12982, 25, 18435, 11, 703, 389, 345, 30, 198, 20630, 25,
                        314, 1101, 257, 10214, 13, 198]], device='cuda:0')
 }
-print(inputs)
-outputs = model(**inputs)
-print(outputs.loss)
-labels = inputs["labels"]
-lm_logits = outputs.logits
-print(lm_logits.size())
-shift_logits = lm_logits[..., :-input_len, :].contiguous()
-print(shift_logits.size())
-shift_labels = labels[..., input_len:].contiguous()
-print(shift_labels.size())
-print(shift_labels)
-# Flatten the tokens
-loss_fct = CrossEntropyLoss()
-loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
-print(loss)
 
 #
 # inputs = {
@@ -60,3 +45,25 @@ print(loss)
 # print(inputs)
 # outputs = model(**inputs)
 # print(outputs.loss)
+
+
+def test(inputs, input_len):
+    outputs = model(**inputs)
+    print("Default loss:", outputs.loss)
+    labels = inputs["labels"]
+    lm_logits = outputs.logits
+
+    shift_logits = lm_logits[..., :-1, :].contiguous()
+    shift_labels = labels[..., 1:].contiguous()    # Flatten the tokens
+    loss_fct = CrossEntropyLoss()
+    loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+    print("Total loss:", loss)
+
+    shift_logits = lm_logits[..., :-input_len, :].contiguous()
+    shift_labels = labels[..., input_len:].contiguous()    # Flatten the tokens
+    loss_fct = CrossEntropyLoss()
+    loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+    print("Output loss:", loss)
+
+
+test(inputs, input_len)
