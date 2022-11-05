@@ -6,7 +6,7 @@ model = AutoModelForCausalLM.from_pretrained("gpt2").to(0)
 tokenizer = AutoTokenizer.from_pretrained("gpt2")
 
 input_str = "User: Hello, how are you?\nBot:"
-output_str = " I am fine"
+output_str = " I'm a bot.\n"
 
 
 
