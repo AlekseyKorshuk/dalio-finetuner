@@ -25,7 +25,7 @@ inputs = {
 print(inputs)
 outputs = model(**inputs)
 print(outputs.loss)
-labels = inputs.labels
+labels = inputs["labels"]
 lm_logits = outputs.logits
 print(lm_logits)
 shift_logits = lm_logits[..., :-1, :].contiguous()
