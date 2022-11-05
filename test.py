@@ -8,8 +8,11 @@ tokenizer = AutoTokenizer.from_pretrained("gpt2")
 input_str = "User: Hello, how are you?\nBot:"
 output_str = " I am fine"
 
+
+
 inputs = tokenizer(input_str, return_tensors="pt").to(0)
 input_len = len(inputs["input_ids"][0])
+print(model.generate(**inputs, do_sample=False))
 
 inputs = tokenizer(output_str, return_tensors="pt").to(0)
 output_len = len(inputs["input_ids"][0])
