@@ -6,9 +6,9 @@ model = AutoModelForCausalLM.from_pretrained("gpt2").to(0)
 tokenizer = AutoTokenizer.from_pretrained("gpt2")
 
 input_str = "User: Hello, how are you?\nBot:"
-output_str = ""
+output_str = " I am fine"
 
-inputs = tokenizer(input_str, return_tensors="pt", return_token_type_ids=True).to(0)
+inputs = tokenizer(input_str + output_str, return_tensors="pt", return_token_type_ids=True).to(0)
 inputs["labels"] = inputs["input_ids"]
 
 # inputs = {
