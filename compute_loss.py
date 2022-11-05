@@ -9,6 +9,7 @@ tokenizer.pad_token = tokenizer.eos_token
 data = ["User", "User:"]
 inputs = tokenizer(data, return_tensors="pt", padding=True).to(0)
 inputs["labels"] = inputs["input_ids"]
+inputs["labels"][0][0] = 233
 print(inputs)
 
 outputs = model(**inputs)
