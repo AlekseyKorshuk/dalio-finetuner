@@ -13,7 +13,22 @@ data = [input_ + output_ for input_, output_ in zip(input_string, output_strings
 inputs = tokenizer(data, return_tensors="pt", padding=True).to(0)
 inputs["labels"] = tensor(inputs.input_ids.tolist().copy(), device="cuda:0")
 print(inputs)
-input_len = len(inputs["input_ids"][0])
+
+output_lengths = [len(tokenizer(output_string).input_ids[0]) for output_string in output_strings]
+
+outputs = model(**inputs)
+
+
+print(outputs.loss)
+
+labels = inputs["labels"]
+lm_logits = outputs.logits
+
+shift_logits = lm_logits[..., :-1, :].contiguous()
+shift_labels = labels[..., 1:].contiguous()  # Flatten the tokens
+loss_fct = CrossEntropyLoss(ignore_index=-1)
+loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+print(loss)
 
 #
 # outputs = tokenizer(output_strings, return_tensors="pt", padding=False).to(0)
