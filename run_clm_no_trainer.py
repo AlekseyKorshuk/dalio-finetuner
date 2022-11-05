@@ -329,6 +329,7 @@ def main():
     if args.dataset_name is not None:
         # Downloading and loading a dataset from the hub.
         raw_datasets = load_dataset(args.dataset_name, args.dataset_config_name)
+        print(len(raw_datasets["train"]))
         raw_datasets["train"] = raw_datasets["train"][:2318]
         if "validation" not in raw_datasets.keys():
             raw_datasets["validation"] = load_dataset(
