@@ -27,10 +27,10 @@ inputs = tokenizer(output_str, return_tensors="pt").to(0)
 output_len = len(inputs["input_ids"][0])
 
 inputs = {
-    'input_ids': tensor([[12982]],
+    'input_ids': tensor([[12982, 198]],
                         device='cuda:0'),
-    'attention_mask': tensor([[1]], device='cuda:0'),
-    'labels': tensor([[12982]], device='cuda:0')
+    'attention_mask': tensor([[1, 1]], device='cuda:0'),
+    'labels': tensor([[12982, 198]], device='cuda:0')
 }
 outputs = model(**inputs)
 print(outputs.logits.size())
