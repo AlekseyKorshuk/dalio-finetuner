@@ -256,7 +256,7 @@ def generate_table(model, tokenizer):
     }
     for sample in samples:
         inputs = tokenizer(sample, return_tensors="pt").to(0)
-        output_ids = model.generate(**inputs)
+        output_ids = model.generate(**inputs, max_new_tokens=64)
         output = tokenizer.decode(output_ids[0][len(inputs.input_ids[0]):])
         table["output"].append(output)
     df = DataFrame(table)
