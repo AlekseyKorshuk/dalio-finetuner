@@ -12,10 +12,13 @@ output_strings = [" I am fine, thanks for asking\n", " I am 20\n"]
 data = [input_ + output_ for input_, output_ in zip(input_string, output_strings)]
 inputs = tokenizer(data, return_tensors="pt", padding=True).to(0)
 inputs["labels"] = tensor(inputs.input_ids.tolist().copy(), device="cuda:0")
-
 output_lengths = [len(tokenizer(output_string).input_ids) for output_string in output_strings]
+for i in range(len(inputs["labels"])):
+    for j in range(0, len(inputs["labels"]) - output_lengths[i]):
+        inputs["labels"][i][j] = -100
 
 outputs = model(**inputs)
+print(outputs.loss)
 
 labels = inputs["labels"]
 lm_logits = outputs.logits
