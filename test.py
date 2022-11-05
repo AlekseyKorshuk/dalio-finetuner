@@ -1,3 +1,4 @@
+from torch.nn import CrossEntropyLoss
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
@@ -24,6 +25,7 @@ shift_labels = labels[..., 1:].contiguous()
 # Flatten the tokens
 loss_fct = CrossEntropyLoss()
 loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+print(loss)
 
 #
 # inputs = {
