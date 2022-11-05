@@ -9,6 +9,25 @@ inputs = {
     "attention_mask": torch.tensor([1, 1, 1, 1, 1], device="cuda:0"),
     "labels": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
 }
-
+print(inputs)
 outputs = model(**inputs)
-print(outputs)
+print(outputs.loss)
+
+
+inputs = {
+    "input_ids": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
+    "attention_mask": torch.tensor([1, 1, 1, 1, 1], device="cuda:0"),
+    "labels": torch.tensor([0, 0, 0, 0, 123], device="cuda:0"),
+}
+print(inputs)
+outputs = model(**inputs)
+print(outputs.loss)
+
+inputs = {
+    "input_ids": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
+    "attention_mask": torch.tensor([1, 1, 1, 1, 0], device="cuda:0"),
+    "labels": torch.tensor([0, 0, 0, 0, 123], device="cuda:0"),
+}
+print(inputs)
+outputs = model(**inputs)
+print(outputs.loss)
