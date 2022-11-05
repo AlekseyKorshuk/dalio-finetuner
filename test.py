@@ -32,9 +32,9 @@ print(outputs.loss)
 labels = inputs["labels"]
 lm_logits = outputs.logits
 print(lm_logits.size())
-shift_logits = lm_logits[..., :-1, :].contiguous()
+shift_logits = lm_logits[..., :-input_len, :].contiguous()
 print(shift_logits.size())
-shift_labels = labels[..., 1:].contiguous()
+shift_labels = labels[..., input_len:].contiguous()
 print(shift_labels.size())
 print(shift_labels)
 # Flatten the tokens
