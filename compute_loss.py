@@ -3,11 +3,11 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from torch import tensor
 
 model = AutoModelForCausalLM.from_pretrained("gpt2").to(0)
-tokenizer = AutoTokenizer.from_pretrained("gpt2")
+tokenizer = AutoTokenizer.from_pretrained("gpt2", padding_side="left")
 tokenizer.pad_token = tokenizer.eos_token
 
 data = ["User", "User:"]
-inputs = tokenizer(data, return_tensors="pt", padding=True, padding_side="left").to(0)
+inputs = tokenizer(data, return_tensors="pt", padding=True).to(0)
 print(inputs)
 
 outputs = model(**inputs)
