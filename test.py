@@ -14,7 +14,7 @@ inputs = tokenizer(input_str, return_tensors="pt").to(0)
 input_len = len(inputs["input_ids"][0])
 outputs = model.generate(**inputs, do_sample=False)
 print(outputs)
-print(tokenizer.decode(outputs))
+print(tokenizer.decode(outputs[0]))
 
 inputs = tokenizer(output_str, return_tensors="pt").to(0)
 output_len = len(inputs["input_ids"][0])
