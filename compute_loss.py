@@ -1,6 +1,6 @@
 from torch.nn import CrossEntropyLoss
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from torch import tensor
+from torch import tensor, cat
 
 model = AutoModelForCausalLM.from_pretrained("gpt2").to(0)
 tokenizer = AutoTokenizer.from_pretrained("gpt2", padding_side="left")
@@ -25,23 +25,36 @@ labels = inputs["labels"]
 lm_logits = outputs.logits
 print(lm_logits)
 
-
 shift_logits = lm_logits[..., :-1, :].contiguous()
-shift_logits = shift_logits.tolist()
-for i in range(len(shift_logits)):
-    shift_logits[i] = shift_logits[i][-output_lengths[i]:]
-shift_logits = tensor(shift_logits, device="cuda:0")
-
+shift_logits = cat(shift_logits)
 shift_labels = labels[..., 1:].contiguous()  # Flatten the tokens
-shift_labels = shift_labels.tolist()
-for i in range(len(shift_labels)):
-    shift_labels[i] = shift_labels[i][-output_lengths[i]:]
-shift_labels = tensor(shift_labels, device="cuda:0")
-# print(shift_labels_test)
-# print(shift_labels.size())
+shift_logits = cat(shift_logits)
 loss_fct = CrossEntropyLoss(ignore_index=-1)
 loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
 print(loss)
+
+
+# shift_logits = lm_logits[..., :-1, :].contiguous()
+# print(shift_logits.size())
+# shift_logits = shift_logits.tolist()
+# for i in range(len(shift_logits)):
+#     shift_logits[i] = shift_logits[i][-output_lengths[i]:]
+# shift_logits = tensor(shift_logits, device="cuda:0")
+# print(shift_logits.size())
+#
+#
+# shift_labels = labels[..., 1:].contiguous()  # Flatten the tokens
+# print(shift_labels.size())
+# shift_labels = shift_labels.tolist()
+# for i in range(len(shift_labels)):
+#     shift_labels[i] = shift_labels[i][-output_lengths[i]:]
+# shift_labels = tensor(shift_labels, device="cuda:0")
+# print(shift_labels.size())
+# # print(shift_labels_test)
+# # print(shift_labels.size())
+# loss_fct = CrossEntropyLoss(ignore_index=-1)
+# loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+# print(loss)
 
 #
 # outputs = tokenizer(output_strings, return_tensors="pt", padding=False).to(0)
