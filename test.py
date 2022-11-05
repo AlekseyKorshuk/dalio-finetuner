@@ -19,7 +19,7 @@ inputs = {
     'labels': tensor([[12982]], device='cuda:0')
 }
 
-outputs = model.generate(**inputs, do_sample=False, eos_token_id=198)
+outputs = model.generate(**inputs, do_sample=False, max_new_tokens=3)
 print(outputs)
 print(tokenizer.decode(outputs[0]))
 
