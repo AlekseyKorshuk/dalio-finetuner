@@ -260,7 +260,7 @@ def generate_table(model, tokenizer):
         output = tokenizer.decode(output_ids[0][len(inputs.input_ids[0]):])
         table["output"].append(output)
     df = DataFrame(table)
-    return Table(df)
+    return Table(data=df)
 
 
 def main():
