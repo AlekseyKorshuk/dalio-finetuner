@@ -39,7 +39,6 @@ print(shift_logits.size())
 shift_logits = shift_logits.tolist()
 for i in range(len(shift_logits)):
     shift_logits[i] = shift_logits[i][-output_lengths[i]:]
-shift_logits = tensor(shift_logits, device="cuda:0")
 shift_logits = cat([data for data in shift_logits])
 print(shift_logits.size())
 
@@ -49,7 +48,6 @@ print(shift_labels.size())
 shift_labels = shift_labels.tolist()
 for i in range(len(shift_labels)):
     shift_labels[i] = shift_labels[i][-output_lengths[i]:]
-shift_labels = tensor(shift_labels, device="cuda:0")
 shift_labels = cat([data for data in shift_labels])
 print(shift_labels.size())
 # print(shift_labels_test)
