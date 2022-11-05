@@ -342,7 +342,7 @@ def main():
                 args.dataset_config_name,
                 split=f"train[{85}%:]",
             )
-            raw_datasets["train"] = raw_datasets["train"][:2318]
+            # raw_datasets["train"] = raw_datasets["train"][:2318]
     else:
         data_files = {}
         dataset_args = {}
