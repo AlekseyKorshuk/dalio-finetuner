@@ -34,6 +34,7 @@ from pathlib import Path
 import datasets
 import torch
 from datasets import load_dataset
+from pandas import DataFrame
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
@@ -54,6 +55,7 @@ from transformers import (
 )
 from transformers.utils import check_min_version, get_full_repo_name, send_example_telemetry
 from transformers.utils.versions import require_version
+from wandb import Table
 
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
@@ -248,10 +250,17 @@ def generate_table(model, tokenizer):
         "Today is",
         "Elon Musk is"
     ]
+    table = {
+        "input": samples,
+        "output": []
+    }
     for sample in samples:
         inputs = tokenizer(sample, return_tensors="pt").to(0)
         output_ids = model.generate(**inputs)
-        print(output_ids)
+        output = tokenizer.decode(output_ids[0][len(inputs.input_ids[0]):])
+        table["output"].append(output)
+    df = DataFrame(table)
+    return Table(df)
 
 
 def main():
@@ -589,7 +598,6 @@ def main():
     completed_steps = starting_epoch * num_update_steps_per_epoch
 
     model.eval()
-    generate_table(model, tokenizer)
     losses = []
     for step, batch in enumerate(eval_dataloader):
         with torch.no_grad():
@@ -615,6 +623,7 @@ def main():
                 "train_loss": 0 / len(train_dataloader),
                 "epoch": 0,
                 "step": completed_steps,
+                "table": generate_table(model, tokenizer)
             },
             step=completed_steps,
         )
@@ -683,6 +692,7 @@ def main():
                     "train_loss": total_loss.item() / len(train_dataloader),
                     "epoch": epoch,
                     "step": completed_steps,
+                    "table": generate_table(model, tokenizer)
                 },
                 step=completed_steps,
             )
