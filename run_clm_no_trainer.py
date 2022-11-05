@@ -241,6 +241,7 @@ def parse_args():
 
 
 def generate_table(model, tokenizer):
+    print("Generating table...")
     samples = [
         "This is",
         "How are you",
@@ -250,6 +251,7 @@ def generate_table(model, tokenizer):
     for sample in samples:
         inputs = tokenizer(sample, return_tensors="pt").to(0)
         output_ids = model.generate(**inputs)
+        print(output_ids)
 
 
 def main():
@@ -587,6 +589,7 @@ def main():
     completed_steps = starting_epoch * num_update_steps_per_epoch
 
     model.eval()
+    generate_table(model, tokenizer)
     losses = []
     for step, batch in enumerate(eval_dataloader):
         with torch.no_grad():
