@@ -442,6 +442,12 @@ def main():
     # To speed up this part, we use multiprocessing. See the documentation of the map method for more information:
     # https://huggingface.co/docs/datasets/package_reference/main_classes.html#datasets.Dataset.map
 
+    ids = [0, 1, 2]
+    # Log a few random samples from the training set:
+    for index in ids:
+        logger.info(f"Sample {index} of the training set: {tokenized_datasets['train'][index]['input_ids']}.")
+
+
     with accelerator.main_process_first():
         lm_datasets = tokenized_datasets.map(
             group_texts,
@@ -456,8 +462,8 @@ def main():
 
     ids = [0, 1, 2]
     # Log a few random samples from the training set:
-    for index in ids:
-        logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
+    # for index in ids:
+    #     logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
 
     # DataLoaders creation:
     train_dataloader = DataLoader(
