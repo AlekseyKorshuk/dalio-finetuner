@@ -8,8 +8,6 @@ tokenizer = AutoTokenizer.from_pretrained("gpt2")
 input_str = "User: Hello, how are you?\nBot:"
 output_str = " I'm a bot.\n"
 
-
-
 inputs = tokenizer(input_str, return_tensors="pt").to(0)
 input_len = len(inputs["input_ids"][0])
 outputs = model.generate(**inputs, do_sample=False, eos_token_id=198)
@@ -21,11 +19,12 @@ output_len = len(inputs["input_ids"][0])
 
 inputs = {
     'input_ids': tensor([[12982, 25, 18435, 11, 703, 389, 345, 30, 198, 20630, 25,
-                          314, 716, 3734]], device='cuda:0'),
+                          314, 1101, 257, 10214, 13, 198]],
+                        device='cuda:0'),
     'attention_mask': tensor([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                               1, 1, 1]], device='cuda:0'),
+                               1, 1, 1, 1, 1, 1]], device='cuda:0'),
     'labels': tensor([[12982, 25, 18435, 11, 703, 389, 345, 30, 198, 20630, 25,
-                       314, 716, 3734]], device='cuda:0')
+                       314, 1101, 257, 10214, 13, 198]], device='cuda:0')
 }
 print(inputs)
 outputs = model(**inputs)
