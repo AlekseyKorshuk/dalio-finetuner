@@ -352,6 +352,7 @@ def main():
             extension = "text"
             dataset_args["keep_linebreaks"] = not args.no_keep_linebreaks
         raw_datasets = load_dataset(extension, data_files=data_files, **dataset_args)
+        raw_datasets["train"] = raw_datasets["train"][:2318]
         # If no validation data is there, validation_split_percentage will be used to divide the dataset.
         if "validation" not in raw_datasets.keys():
             raw_datasets["validation"] = load_dataset(
