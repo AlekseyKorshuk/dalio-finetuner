@@ -27,6 +27,7 @@ inputs = {
                        314, 1101, 257, 10214, 13, 198]], device='cuda:0')
 }
 outputs = model(**inputs)
+print(outputs.logits.size())
 print(outputs.logits[0])
 
 
