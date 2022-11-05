@@ -12,7 +12,7 @@ output_str = " I am fine"
 
 inputs = tokenizer(input_str, return_tensors="pt").to(0)
 input_len = len(inputs["input_ids"][0])
-outputs = model.generate(**inputs, do_sample=False)
+outputs = model.generate(**inputs, do_sample=False, eos_token_id=198)
 print(outputs)
 print(tokenizer.decode(outputs[0]))
 
