@@ -9,7 +9,7 @@ input_str = "User: Hello, how are you?\nBot:"
 output_str = ""
 
 inputs = tokenizer(input_str, return_tensors="pt", return_token_type_ids=True).to(0)
-inputs["labels"] = inputs["input_ids"].copy()
+inputs["labels"] = inputs["input_ids"]
 
 # inputs = {
 #     "input_ids": torch.tensor([0, 0, 0, 0, 0], device="cuda:0"),
