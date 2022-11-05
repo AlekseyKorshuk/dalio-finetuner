@@ -1,4 +1,4 @@
-python run_clm_no_trainer.py \
+python3 run_clm_no_trainer.py \
     --model_name_or_path gpt2 \
     --dataset_name wikitext \
     --dataset_config_name wikitext-2-raw-v1 \
