@@ -9,7 +9,7 @@ tokenizer.pad_token = tokenizer.eos_token
 data = ["User", "User:"]
 inputs = tokenizer(data, return_tensors="pt", padding=True).to(0)
 inputs["labels"] = tensor(inputs["input_ids"].tolist().copy(), device="cuda:0")
-inputs["labels"][0][0] = 233
+inputs["labels"][0][0] = 50256
 print(inputs)
 
 outputs = model(**inputs)
