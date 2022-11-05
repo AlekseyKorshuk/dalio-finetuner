@@ -7,7 +7,7 @@ tokenizer = AutoTokenizer.from_pretrained("gpt2", padding_side="left")
 tokenizer.pad_token = tokenizer.eos_token
 
 input_string = ["User: How are you?\nBot:", "User: Hello, how old are you?\nBot:"]
-output_strings = [" I am fine\n", " I am 20\n"]
+output_strings = [" I am fine, thanks for asking\n", " I am 20\n"]
 
 data = [input_ + output_ for input_, output_ in zip(input_string, output_strings)]
 inputs = tokenizer(data, return_tensors="pt", padding=True).to(0)
