@@ -27,7 +27,7 @@ outputs = model(**inputs)
 print(outputs.loss)
 labels = inputs["labels"]
 lm_logits = outputs.logits
-print(lm_logits)
+print(len(lm_logits))
 shift_logits = lm_logits[..., :-1, :].contiguous()
 shift_labels = labels[..., 1:].contiguous()
 # Flatten the tokens
