@@ -6,4 +6,5 @@ python3 run_clm_no_trainer.py \
     --per_device_eval_batch_size 8 \
     --output_dir /tmp/test-clm \
     --num_train_epochs 1 \
-    --with_tracking
+    --with_tracking \
+    --block_size 5
