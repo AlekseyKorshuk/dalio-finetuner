@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   labels:
     qos.coreweave.cloud/latency: low
-  name: aleksey-1
+  name: aleksey-2
   namespace: tenant-chairesearch-test
 spec:
   volumes:
@@ -20,13 +20,13 @@ spec:
       args: [ "infinity" ]
       resources:
         limits:
-          cpu: "1"
+          cpu: "10"
           nvidia.com/gpu: "1"
-          memory: 124Gi
+          memory: 228Gi
         requests:
-          cpu: "1"
+          cpu: "6"
           nvidia.com/gpu: "1"
-          memory: 124Gi
+          memory: 228Gi
       volumeMounts:
         - name: storage-reward-models
           mountPath: /models
@@ -43,13 +43,6 @@ spec:
   affinity:
     nodeAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 5
-          preference:
-            matchExpressions:
-              - key: topology.kubernetes.io/region
-                operator: In
-                values:
-                  - ORD1
         - weight: 20
           preference:
             matchExpressions:
