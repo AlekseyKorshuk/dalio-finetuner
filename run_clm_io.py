@@ -251,7 +251,7 @@ def generate_table(model, tokenizer, test_dataset):
     }
     for sample in input_texts:
         inputs = tokenizer(sample, return_tensors="pt").to(0)
-        output_ids = model.generate(**inputs, max_new_tokens=256, eos_token_id=198)
+        output_ids = model.generate(**inputs, max_new_tokens=64, eos_token_id=198)
         output = tokenizer.decode(output_ids[0][len(inputs.input_ids[0]):])
         table["output"].append(output)
     df = DataFrame(table)
@@ -434,7 +434,7 @@ def main():
         output_texts = examples[output_column_name]
         data = [input_ + output_ for input_, output_ in zip(input_texts, output_texts)]
         inputs = tokenizer(data, return_tensors="pt", padding="max_length", truncation=True, max_length=block_size)
-        inputs["labels"] = torch.tensor(inputs.input_ids.tolist().copy(), device="cuda:0")
+        inputs["labels"] = torch.tensor(inputs.input_ids.tolist().copy())
         output_lengths = [len(tokenizer(output_string).input_ids) for output_string in output_texts]
         for i in range(len(inputs["labels"])):
             for j in range(0, len(inputs["labels"][i]) - output_lengths[i]):
