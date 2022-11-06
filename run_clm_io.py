@@ -255,7 +255,9 @@ def generate_table(model, tokenizer, test_dataset):
         output_ids = model.generate(**inputs, max_new_tokens=64, eos_token_id=50118)
         output = tokenizer.decode(output_ids[0][len(inputs.input_ids[0]):])
         table["output"].append(output)
+        del inputs
     df = DataFrame(table)
+    torch.cuda.empty_cache()
     return Table(data=df)
 
 
@@ -621,7 +623,7 @@ def main():
 
         loss = outputs.loss
         losses.append(accelerator.gather_for_metrics(loss.repeat(args.per_device_eval_batch_size)))
-
+    torch.cuda.empty_cache()
     losses = torch.cat(losses)
     try:
         eval_loss = torch.mean(losses)
@@ -645,6 +647,7 @@ def main():
         )
 
     for epoch in range(starting_epoch, args.num_train_epochs):
+        torch.cuda.empty_cache()
         model.train()
         if args.with_tracking:
             total_loss = 0
@@ -681,7 +684,7 @@ def main():
                     accelerator.save_state(output_dir)
             if completed_steps >= args.max_train_steps:
                 break
-
+        torch.cuda.empty_cache()
         model.eval()
         losses = []
         for step, batch in enumerate(eval_dataloader):
