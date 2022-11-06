@@ -535,7 +535,7 @@ def main():
     model.eval()
     losses = []
     for step, batch in enumerate(eval_dataloader):
-        batch.to(0)
+        batch = {k: v.to(0) for k, v in batch.items()}
         with torch.no_grad():
             outputs = model(**batch)
 
@@ -569,6 +569,7 @@ def main():
         if args.with_tracking:
             total_loss = 0
         for step, batch in enumerate(train_dataloader):
+            batch = {k: v.to(0) for k, v in batch.items()}
             # We need to skip steps until we reach the resumed step
             if args.resume_from_checkpoint and epoch == starting_epoch:
                 if resume_step is not None and step < resume_step:
@@ -604,6 +605,7 @@ def main():
         model.eval()
         losses = []
         for step, batch in enumerate(eval_dataloader):
+            batch = {k: v.to(0) for k, v in batch.items()}
             with torch.no_grad():
                 outputs = model(**batch)
 
