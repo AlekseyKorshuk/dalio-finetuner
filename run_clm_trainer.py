@@ -8,6 +8,7 @@ from itertools import chain
 from typing import Optional
 
 import datasets
+import torch
 from datasets import load_dataset
 
 import evaluate
@@ -465,7 +466,7 @@ def main():
         if training_args.do_eval and not is_torch_tpu_available()
         else None,
     )
-    trainer._cache_enabled = True
+    torch.set_autocast_cache_enabled(False)
 
     # Training
     if training_args.do_train:

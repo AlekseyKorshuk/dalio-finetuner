@@ -25,4 +25,4 @@ python3 run_clm_trainer.py \
     --output_dir /tmp/test-clm \
     --overwrite_output_dir \
     --num_train_epochs 1 \
-    --fp16
+    --bf16
