@@ -622,13 +622,15 @@ def main():
             if args.with_tracking:
                 total_loss += loss.detach().float()
 
-            loss.backward()
-            if (step + 1) % args.gradient_accumulation_steps == 0:
-                optimizer.step()
-                lr_scheduler.step()
-                optimizer.zero_grad()
-                progress_bar.update(1)
-                completed_steps += 1
+            model.backward(loss)
+            # loss.backward()
+            model.step()
+            # if (step + 1) % args.gradient_accumulation_steps == 0:
+            #     optimizer.step()
+            #     lr_scheduler.step()
+            #     optimizer.zero_grad()
+            #     progress_bar.update(1)
+            #     completed_steps += 1
 
             # if isinstance(checkpointing_steps, int):
             #     if completed_steps % checkpointing_steps == 0:
