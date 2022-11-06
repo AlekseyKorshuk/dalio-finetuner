@@ -340,7 +340,7 @@ def main():
             raw_datasets["train"] = load_dataset(
                 args.dataset_name,
                 args.dataset_config_name,
-                split=f"train[{args.validation_split_percentage}%:]",
+                split=f"train[{85}%:]",
             )
     else:
         data_files = {}
