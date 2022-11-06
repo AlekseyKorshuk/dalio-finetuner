@@ -36,6 +36,7 @@ import datasets
 import torch
 from datasets import load_dataset
 from pandas import DataFrame
+from torch import autocast
 from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
@@ -661,7 +662,8 @@ def main():
                     continue
 
             with accelerator.accumulate(model):
-                outputs = model(**batch)
+                with autocast(device_type="cuda", dtype=torch.float16):
+                    outputs = model(**batch)
                 loss = outputs.loss
                 # We keep track of the loss at each epoch
                 if args.with_tracking:
