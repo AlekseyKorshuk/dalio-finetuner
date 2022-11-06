@@ -511,11 +511,12 @@ def main():
             perplexity = float("inf")
         metrics["perplexity"] = perplexity
 
-        metrics["table"] = generate_table(trainer.model, tokenizer, raw_datasets["test"])
         print("METRICS:", metrics)
-        trainer
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
+        metrics["table"] = generate_table(trainer.model, tokenizer, raw_datasets["test"])
+        trainer.log(metrics)
+
 
     # Training
     if training_args.do_train:
