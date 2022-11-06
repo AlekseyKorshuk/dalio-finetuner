@@ -207,7 +207,7 @@ def generate_table(model, tokenizer, test_dataset):
         del inputs
     df = DataFrame(table)
     torch.cuda.empty_cache()
-    return Table(data=df)
+    return df
 
 
 def main():
@@ -513,6 +513,7 @@ def main():
 
         metrics["table"] = generate_table(trainer.model, tokenizer, raw_datasets["test"])
         print("METRICS:", metrics)
+        trainer
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
 
