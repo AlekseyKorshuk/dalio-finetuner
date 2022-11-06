@@ -487,12 +487,16 @@ def main():
             "enabled": True
         },
         "zero_optimization": {
-            "stage": 3,
+            "stage": 2,
             "offload_optimizer": {
+                "device": "cpu",
+            },
+            "offload_param": {
                 "device": "cpu",
             },
             "contiguous_gradients": True,
             "overlap_comm": True,
+            "reduce_scatter": True,
             "reduce_bucket_size": 5e8,
             "allgather_bucket_size": 5e8,
         },
