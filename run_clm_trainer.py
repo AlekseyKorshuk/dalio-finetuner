@@ -207,7 +207,7 @@ def generate_table(model, tokenizer, test_dataset):
         del inputs
     df = DataFrame(table)
     torch.cuda.empty_cache()
-    return df
+    return Table(df)
 
 
 def main():
