@@ -49,11 +49,11 @@ spec:
               - key: gpu.nvidia.com/class
                 operator: In
                 values:
-                  - A100_PCIE_40GB
+                  - A40
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
               - key: gpu.nvidia.com/class
                 operator: In
                 values:
-                  - A100_PCIE_40GB
+                  - A40
