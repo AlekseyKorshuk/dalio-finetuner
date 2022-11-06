@@ -520,8 +520,8 @@ def main():
         print("METRICS:", metrics)
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
-        metrics["table"] = generate_table(trainer.model, tokenizer, raw_datasets["test"])
-        trainer.log(metrics)
+        # metrics["table"] = generate_table(trainer.model, tokenizer, raw_datasets["test"])
+        # trainer.log(metrics)
 
 
     # Training
