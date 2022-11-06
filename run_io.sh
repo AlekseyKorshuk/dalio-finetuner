@@ -19,7 +19,7 @@ deepspeed baseline_train.py \
     --with_tracking
 
 python3 run_clm_trainer.py \
-    --model_name_or_path facebook/opt-350m \
+    --model_name_or_path facebook/opt-6.7b \
     --dataset_name AlekseyKorshuk/amazon-reviews-input-output \
     --do_train \
     --do_eval \
@@ -34,7 +34,7 @@ python3 run_clm_trainer.py \
     --per_device_eval_batch_size 8 \
     --output_dir /tmp/test-clm \
     --overwrite_output_dir \
-    --num_train_epochs 1 \
+    --num_train_epochs 5 \
     --fp16 \
     --push_to_hub \
     --hub_model_id "AlekseyKorshuk/amazon-reviews-input-output"
