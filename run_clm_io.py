@@ -434,7 +434,7 @@ def main():
         output_texts = examples[output_column_name]
         data = [input_ + output_ for input_, output_ in zip(input_texts, output_texts)]
         inputs = tokenizer(data, padding="max_length", truncation=True, max_length=block_size)
-        inputs["labels"] = inputs.input_ids.tolist().copy()
+        inputs["labels"] = inputs.input_ids.copy()
         output_lengths = [len(tokenizer(output_string).input_ids) for output_string in output_texts]
         for i in range(len(inputs["labels"])):
             for j in range(0, len(inputs["labels"][i]) - output_lengths[i]):
