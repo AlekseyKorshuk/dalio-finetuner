@@ -474,7 +474,7 @@ def main():
     # optimizer = torch.optim.AdamW(optimizer_grouped_parameters, lr=args.learning_rate)
 
     ds_config = {
-        "train_batch_size": 1,
+        "train_batch_size": 8,
         "gradient_accumulation_steps": 8,
         "train_micro_batch_size_per_gpu": 1,
         "optimizer": {
