@@ -450,6 +450,8 @@ def main():
     with training_args.main_process_first(desc="grouping texts together"):
         lm_datasets = tokenized_datasets
 
+    print("Example data:", lm_datasets["train"][0])
+
     if training_args.do_train:
         if "train" not in tokenized_datasets:
             raise ValueError("--do_train requires a train dataset")
