@@ -240,21 +240,18 @@ def parse_args():
     return args
 
 
-def generate_table(model, tokenizer):
+def generate_table(model, tokenizer, test_dataset):
     print("Generating table...")
-    samples = [
-        "Robert Boulter is",
-        "In 2006 , Boulter starred",
-        "Homarus gammarus , known",
-        "Elon Musk is"
-    ]
+    input_texts = test_dataset["input_text"]
+    output_texts = test_dataset["output_text"]
     table = {
-        "input": samples,
-        "output": []
+        "input": input_texts,
+        "output": [],
+        "target": output_texts
     }
-    for sample in samples:
+    for sample in input_texts:
         inputs = tokenizer(sample, return_tensors="pt").to(0)
-        output_ids = model.generate(**inputs, max_new_tokens=64)
+        output_ids = model.generate(**inputs, max_new_tokens=256, eos_token_id=198)
         output = tokenizer.decode(output_ids[0][len(inputs.input_ids[0]):])
         table["output"].append(output)
     df = DataFrame(table)
@@ -500,6 +497,8 @@ def main():
     train_dataset = lm_datasets["train"]
     eval_dataset = lm_datasets["validation"]
 
+    test_raw_dataset = raw_datasets["test"]
+
     ids = [0, 1, 2]
     # Log a few random samples from the training set:
     for index in ids:
@@ -639,7 +638,7 @@ def main():
                 "train_loss": 0 / len(train_dataloader),
                 "epoch": 0,
                 "step": completed_steps,
-                "table": generate_table(model, tokenizer)
+                "table": generate_table(model, tokenizer, test_raw_dataset)
             },
             step=completed_steps,
         )
@@ -708,7 +707,7 @@ def main():
                     "train_loss": total_loss.item() / len(train_dataloader),
                     "epoch": epoch,
                     "step": completed_steps,
-                    "table": generate_table(model, tokenizer)
+                    "table": generate_table(model, tokenizer, test_raw_dataset)
                 },
                 step=completed_steps,
             )
