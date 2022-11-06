@@ -489,7 +489,7 @@ def main():
             return metrics
 
     # Initialize our Trainer
-    trainer = CustomTrainer(
+    trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=train_dataset if training_args.do_train else None,
