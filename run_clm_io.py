@@ -416,7 +416,7 @@ def main():
     output_column_name = "output_text" if "output_text" in column_names else column_names[1]
 
     def tokenize_function(examples):
-        print(examples[0])
+        print(examples)
         input("Press Enter to continue...")
         # tokenized = tokenizer(examples[text_column_name])
         return tokenizer(examples[input_column_name])
