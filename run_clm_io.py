@@ -412,10 +412,13 @@ def main():
     # First we tokenize all the texts.
     column_names = raw_datasets["train"].column_names
     text_column_name = "text" if "text" in column_names else column_names[0]
-    input_column_name = "input_"
+    input_column_name = "input_text" if "input_text" in column_names else column_names[0]
+    output_column_name = "output_text" if "output_text" in column_names else column_names[1]
 
     def tokenize_function(examples):
-        return tokenizer(examples[text_column_name])
+        print(examples[0])
+        # tokenized = tokenizer(examples[text_column_name])
+        return tokenizer(examples[input_column_name])
 
     with accelerator.main_process_first():
         tokenized_datasets = raw_datasets.map(
