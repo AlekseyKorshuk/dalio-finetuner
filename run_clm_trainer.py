@@ -180,6 +180,11 @@ class DataTrainingArguments:
                 extension = self.validation_file.split(".")[-1]
                 assert extension in ["csv", "json", "txt"], "`validation_file` should be a csv, a json or a txt file."
 
+class CustomTrainer(Trainer):
+    def compute_loss(self, model, inputs, return_outputs=False):
+        outputs = model(**inputs)
+        loss = outputs.get("loss")
+        return (loss, outputs) if return_outputs else loss
 
 def main():
     # See all possible arguments in src/transformers/training_args.py

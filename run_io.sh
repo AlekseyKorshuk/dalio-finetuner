@@ -24,15 +24,17 @@ python3 run_clm_trainer.py \
     --do_train \
     --do_eval \
     --logging_strategy steps \
-    --logging_steps 50 \
+    --logging_steps 25 \
     --evaluation_strategy steps \
-    --eval_steps 50 \
+    --eval_steps 25 \
     --logging_first_step \
     --report_to all \
-    --per_device_train_batch_size 1 \
-    --gradient_accumulation_steps 8 \
+    --per_device_train_batch_size 8 \
+    --gradient_accumulation_steps 1 \
     --per_device_eval_batch_size 8 \
     --output_dir /tmp/test-clm \
     --overwrite_output_dir \
     --num_train_epochs 1 \
-    --bf16
+    --fp16 \
+    --push_to_hub \
+    --hub_model_id "AlekseyKorshuk/amazon-reviews-input-output"
