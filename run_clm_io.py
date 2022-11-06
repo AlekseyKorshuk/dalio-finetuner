@@ -299,7 +299,9 @@ def main():
             "allgather_bucket_size": 5e8,
         },
     }
-    ds_plugin = DeepSpeedPlugin(**ds_config)
+    ds_plugin = DeepSpeedPlugin(
+        hf_ds_config=ds_config,
+    )
     accelerator = Accelerator(fp16=True, gradient_accumulation_steps=args.gradient_accumulation_steps, ds_plugin=ds_plugin, **accelerator_log_kwargs)
 
     # Make one log on every process with the configuration for debugging.
