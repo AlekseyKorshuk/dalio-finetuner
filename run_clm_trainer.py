@@ -13,6 +13,7 @@ from datasets import load_dataset
 
 import evaluate
 import transformers
+from pandas import DataFrame
 from transformers import (
     CONFIG_MAPPING,
     MODEL_FOR_CAUSAL_LM_MAPPING,
@@ -31,14 +32,14 @@ from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 
-
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
+from wandb import Table
+
 check_min_version("4.24.0")
 
 require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/language-modeling/requirements.txt")
 
 logger = logging.getLogger(__name__)
-
 
 MODEL_CONFIG_CLASSES = list(MODEL_FOR_CAUSAL_LM_MAPPING.keys())
 MODEL_TYPES = tuple(conf.model_type for conf in MODEL_CONFIG_CLASSES)
@@ -180,11 +181,34 @@ class DataTrainingArguments:
                 extension = self.validation_file.split(".")[-1]
                 assert extension in ["csv", "json", "txt"], "`validation_file` should be a csv, a json or a txt file."
 
+
 class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
         outputs = model(**inputs)
         loss = outputs.get("loss")
         return (loss, outputs) if return_outputs else loss
+
+
+def generate_table(model, tokenizer, test_dataset):
+    print("Generating table...")
+    input_texts = test_dataset["input_text"]
+    output_texts = test_dataset["output_text"]
+    table = {
+        "input": input_texts,
+        "output": [],
+        "target": output_texts
+    }
+    for sample in input_texts:
+        inputs = tokenizer(sample, return_tensors="pt")
+        inputs.to(model.device)
+        output_ids = model.generate(**inputs, max_new_tokens=64, eos_token_id=50118)
+        output = tokenizer.decode(output_ids[0][len(inputs.input_ids[0]):])
+        table["output"].append(output)
+        del inputs
+    df = DataFrame(table)
+    torch.cuda.empty_cache()
+    return Table(data=df)
+
 
 def main():
     # See all possible arguments in src/transformers/training_args.py
@@ -369,7 +393,7 @@ def main():
     else:
         model = AutoModelForCausalLM.from_config(config)
         n_params = sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values())
-        logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
+        logger.info(f"Training new model from scratch - Total size={n_params / 2 ** 20:.2f}M params")
 
     model.resize_token_embeddings(len(tokenizer))
 
@@ -455,7 +479,8 @@ def main():
             # by preprocess_logits_for_metrics but we need to shift the labels
             labels = labels[:, 1:].reshape(-1)
             preds = preds[:, :-1].reshape(-1)
-            return metric.compute(predictions=preds, references=labels)
+            metrics = metric.compute(predictions=preds, references=labels)
+            return metrics
 
     # Initialize our Trainer
     trainer = CustomTrainer(
@@ -486,6 +511,7 @@ def main():
             perplexity = float("inf")
         metrics["perplexity"] = perplexity
 
+        metrics["table"] = generate_table(trainer.model, tokenizer, raw_datasets["test"])
         print("METRICS:", metrics)
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
