@@ -41,7 +41,7 @@ from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
 import transformers
-from accelerate import Accelerator, DistributedType
+from accelerate import Accelerator, DistributedType, DeepSpeedPlugin
 from accelerate.logging import get_logger
 from accelerate.utils import set_seed
 from huggingface_hub import Repository
@@ -278,7 +278,29 @@ def main():
         accelerator_log_kwargs["log_with"] = args.report_to
         accelerator_log_kwargs["logging_dir"] = args.output_dir
 
-    accelerator = Accelerator(fp16=True, gradient_accumulation_steps=args.gradient_accumulation_steps, **accelerator_log_kwargs)
+    ds_config = {
+        "train_batch_size": 1,
+        "gradient_accumulation_steps": 1,
+        "optimizer": {
+            "type": "Adam",
+            "params": {
+                "lr": args.learning_rate
+            }
+        },
+        "fp16": {
+            "enabled": True
+        },
+        "zero_optimization": {
+            "stage": 2,
+            "cpu_offload": False,
+            "contiguous_gradients": True,
+            "overlap_comm": True,
+            "reduce_bucket_size": 5e8,
+            "allgather_bucket_size": 5e8,
+        },
+    }
+    ds_plugin = DeepSpeedPlugin(**ds_config)
+    accelerator = Accelerator(fp16=True, gradient_accumulation_steps=args.gradient_accumulation_steps, ds_plugin=ds_plugin, **accelerator_log_kwargs)
 
     # Make one log on every process with the configuration for debugging.
     logging.basicConfig(
