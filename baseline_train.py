@@ -540,7 +540,7 @@ def main():
             outputs = model(**batch)
 
         loss = outputs.loss
-        losses.append(loss.item())
+        losses.append(loss)
     torch.cuda.empty_cache()
     losses = torch.cat(losses)
     try:
@@ -610,7 +610,7 @@ def main():
                 outputs = model(**batch)
 
             loss = outputs.loss
-            losses.append(loss.item())
+            losses.append(loss)
 
         losses = torch.cat(losses)
         try:
