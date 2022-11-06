@@ -22,7 +22,7 @@ spec:
         limits:
           cpu: "12"
           nvidia.com/gpu: "8"
-          memory: 300Gi
+          memory: 228Gi
         requests:
           cpu: "6"
           nvidia.com/gpu: "8"
