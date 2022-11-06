@@ -1,3 +1,28 @@
 
 apt-get update && apt-get -y upgrade && apt-get install -y libopenmpi-dev && pip install mpi4py
 
+git clone https://github.com/AlekseyKorshuk/dalio-finetuner && cd dalio-finetuner && pip install -r requirements.txt && pip install torch==1.12.1+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html && apt-get update && apt-get -y upgrade && apt-get install -y libopenmpi-dev && pip install mpi4py
+
+wandb login && huggingface-cli login
+
+deepspeed run_clm_trainer.py \
+    --model_name_or_path facebook/opt-13b \
+    --dataset_name AlekseyKorshuk/amazon-reviews-input-output \
+    --do_train \
+    --do_eval \
+    --logging_strategy steps \
+    --logging_steps 25 \
+    --evaluation_strategy steps \
+    --eval_steps 25 \
+    --logging_first_step \
+    --report_to all \
+    --per_device_train_batch_size 1 \
+    --gradient_accumulation_steps 8 \
+    --per_device_eval_batch_size 8 \
+    --output_dir /tmp/test-clm \
+    --overwrite_output_dir \
+    --num_train_epochs 5 \
+    --fp16 \
+    --push_to_hub \
+    --hub_model_id "AlekseyKorshuk/amazon-reviews-input-output" \
+    --deepspeed ds_config.json
