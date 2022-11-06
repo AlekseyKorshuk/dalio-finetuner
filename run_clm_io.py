@@ -303,7 +303,7 @@ def main():
         hf_ds_config=ds_config,
     )
     ds_plugin = None
-    accelerator = Accelerator(fp16=True, gradient_accumulation_steps=args.gradient_accumulation_steps, deepspeed_plugin=ds_plugin, **accelerator_log_kwargs)
+    accelerator = Accelerator(fp16=True, gradient_accumulation_steps=args.gradient_accumulation_steps, **accelerator_log_kwargs)
 
     # Make one log on every process with the configuration for debugging.
     logging.basicConfig(
