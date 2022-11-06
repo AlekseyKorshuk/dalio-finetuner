@@ -57,7 +57,6 @@ from transformers.utils import check_min_version, get_full_repo_name, send_examp
 from transformers.utils.versions import require_version
 from wandb import Table
 
-
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 check_min_version("4.25.0.dev0")
 
@@ -241,7 +240,6 @@ def parse_args():
     return args
 
 
-
 def generate_table(model, tokenizer):
     print("Generating table...")
     samples = [
@@ -391,6 +389,9 @@ def main():
             "You are instantiating a new tokenizer from scratch. This is not supported by this script."
             "You can do it from another script, save it, and load it from here, using --tokenizer_name."
         )
+    tokenizer.padding_side = "left"
+    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.truncation_side = "left"
 
     if args.model_name_or_path:
         model = AutoModelForCausalLM.from_pretrained(
@@ -408,29 +409,6 @@ def main():
     if len(tokenizer) > embedding_size:
         model.resize_token_embeddings(len(tokenizer))
 
-    # Preprocessing the datasets.
-    # First we tokenize all the texts.
-    column_names = raw_datasets["train"].column_names
-    text_column_name = "text" if "text" in column_names else column_names[0]
-    input_column_name = "input_text" if "input_text" in column_names else column_names[0]
-    output_column_name = "output_text" if "output_text" in column_names else column_names[1]
-
-    def tokenize_function(examples):
-        print(examples)
-        input("Press Enter to continue...")
-        # tokenized = tokenizer(examples[text_column_name])
-        return tokenizer(examples[input_column_name])
-
-    with accelerator.main_process_first():
-        tokenized_datasets = raw_datasets.map(
-            tokenize_function,
-            batched=True,
-            num_proc=args.preprocessing_num_workers,
-            remove_columns=column_names,
-            load_from_cache_file=not args.overwrite_cache,
-            desc="Running tokenizer on dataset",
-        )
-
     if args.block_size is None:
         block_size = tokenizer.model_max_length
         if block_size > 1024:
@@ -447,6 +425,39 @@ def main():
             )
         block_size = min(args.block_size, tokenizer.model_max_length)
 
+    # Preprocessing the datasets.
+    # First we tokenize all the texts.
+    column_names = raw_datasets["train"].column_names
+    text_column_name = "text" if "text" in column_names else column_names[0]
+    input_column_name = "input_text" if "input_text" in column_names else column_names[0]
+    output_column_name = "output_text" if "output_text" in column_names else column_names[1]
+
+    def tokenize_function(examples):
+        input_texts = examples[input_column_name]
+        output_texts = examples[output_column_name]
+        data = [input_ + output_ for input_, output_ in zip(input_texts, output_texts)]
+        inputs = tokenizer(data, return_tensors="pt", padding="max_length", truncation=True, max_length=block_size)
+        inputs["labels"] = torch.tensor(inputs.input_ids.tolist().copy(), device="cuda:0")
+        output_lengths = [len(tokenizer(output_string).input_ids) for output_string in output_texts]
+        for i in range(len(inputs["labels"])):
+            for j in range(0, len(inputs["labels"][i]) - output_lengths[i]):
+                inputs["labels"][i][j] = -100
+        return inputs
+        # print(examples)
+        # input("Press Enter to continue...")
+        # # tokenized = tokenizer(examples[text_column_name])
+        # return tokenizer(examples[input_column_name])
+
+    with accelerator.main_process_first():
+        tokenized_datasets = raw_datasets.map(
+            tokenize_function,
+            batched=True,
+            num_proc=args.preprocessing_num_workers,
+            remove_columns=column_names,
+            load_from_cache_file=not args.overwrite_cache,
+            desc="Running tokenizer on dataset",
+        )
+
     # Main data processing function that will concatenate all texts from our dataset and generate chunks of block_size.
     def group_texts(examples):
         # Concatenate all texts.
@@ -458,7 +469,7 @@ def main():
             total_length = (total_length // block_size) * block_size
         # Split by chunks of max_len.
         result = {
-            k: [t[i : i + block_size] for i in range(0, total_length, block_size)]
+            k: [t[i: i + block_size] for i in range(0, total_length, block_size)]
             for k, t in concatenated_examples.items()
         }
         result["labels"] = result["input_ids"].copy()
@@ -476,15 +487,15 @@ def main():
     for index in ids:
         logger.info(f"Sample {index} of the training set: {tokenized_datasets['train'][index]['input_ids']}.")
 
-
     with accelerator.main_process_first():
-        lm_datasets = tokenized_datasets.map(
-            group_texts,
-            batched=True,
-            num_proc=args.preprocessing_num_workers,
-            load_from_cache_file=not args.overwrite_cache,
-            desc=f"Grouping texts in chunks of {block_size}",
-        )
+        lm_datasets = tokenized_datasets
+        # lm_datasets = tokenized_datasets.map(
+        #     group_texts,
+        #     batched=True,
+        #     num_proc=args.preprocessing_num_workers,
+        #     load_from_cache_file=not args.overwrite_cache,
+        #     desc=f"Grouping texts in chunks of {block_size}",
+        # )
 
     train_dataset = lm_datasets["train"]
     eval_dataset = lm_datasets["validation"]
@@ -664,7 +675,7 @@ def main():
 
             if isinstance(checkpointing_steps, int):
                 if completed_steps % checkpointing_steps == 0:
-                    output_dir = f"step_{completed_steps }"
+                    output_dir = f"step_{completed_steps}"
                     if args.output_dir is not None:
                         output_dir = os.path.join(args.output_dir, output_dir)
                     accelerator.save_state(output_dir)
