@@ -206,6 +206,12 @@ def parse_args():
         help="If the training should continue from a checkpoint folder.",
     )
     parser.add_argument(
+        "--local_rank",
+        type=int,
+        default=0,
+        help="For distributed training: local_rank",
+    )
+    parser.add_argument(
         "--with_tracking",
         action="store_true",
         help="Whether to enable experiment trackers for logging.",
