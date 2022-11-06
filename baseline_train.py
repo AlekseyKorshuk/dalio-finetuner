@@ -33,6 +33,7 @@ from pathlib import Path
 from copy import deepcopy
 
 import datasets
+import deepspeed
 import torch
 from datasets import load_dataset
 from pandas import DataFrame
@@ -261,6 +262,8 @@ def generate_table(model, tokenizer, test_dataset):
 def main():
     args = parse_args()
 
+    deepspeed.init_distributed()
+
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
     send_example_telemetry("run_clm_io", args)
@@ -391,7 +394,7 @@ def main():
         )
     else:
         model = AutoModelForCausalLM.from_config(config)
-    model.to(0)
+    # model.to(0)
     # model.half()
     # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
     # on a small vocab and want a smaller embedding size, remove this test.
@@ -451,18 +454,46 @@ def main():
 
     # Optimizer
     # Split weights in two groups, one with weight decay and the other not.
-    no_decay = ["bias", "layer_norm.weight"]
-    optimizer_grouped_parameters = [
-        {
-            "params": [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)],
-            "weight_decay": args.weight_decay,
+    # no_decay = ["bias", "layer_norm.weight"]
+    # optimizer_grouped_parameters = [
+    #     {
+    #         "params": [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)],
+    #         "weight_decay": args.weight_decay,
+    #     },
+    #     {
+    #         "params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)],
+    #         "weight_decay": 0.0,
+    #     },
+    # ]
+    # optimizer = torch.optim.AdamW(optimizer_grouped_parameters, lr=args.learning_rate)
+
+    ds_config = {
+        "train_batch_size": 1,
+        "gradient_accumulation_steps": 1,
+        "optimizer": {
+            "type": "Adam",
+            "params": {
+                "lr": args.learning_rate,
+            }
         },
-        {
-            "params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)],
-            "weight_decay": 0.0,
+        "fp16": {
+            "enabled": True
         },
-    ]
-    optimizer = torch.optim.AdamW(optimizer_grouped_parameters, lr=args.learning_rate)
+        "zero_optimization": {
+            "stage": 2,
+            "cpu_offload": False,
+            "contiguous_gradients": True,
+            "overlap_comm": True,
+            "reduce_bucket_size": 5e8,
+            "allgather_bucket_size": 5e8,
+        },
+    }
+
+    model, optimizer, _, _ = deepspeed.initialize(
+        config=ds_config,
+        model=model,
+        model_parameters=model.parameters()
+    )
 
     # Scheduler and math around the number of training steps.
     overrode_max_train_steps = False
@@ -558,7 +589,7 @@ def main():
                 # "train_loss": 0 / len(train_dataloader),
                 "epoch": 0,
                 "step": completed_steps,
-                "table": generate_table(model, tokenizer, test_raw_dataset)
+                # "table": generate_table(model, tokenizer, test_raw_dataset)
             },
             step=completed_steps,
         )
@@ -629,7 +660,7 @@ def main():
                     "train_loss": total_loss.item() / len(train_dataloader),
                     "epoch": epoch,
                     "step": completed_steps,
-                    "table": generate_table(model, tokenizer, test_raw_dataset)
+                    # "table": generate_table(model, tokenizer, test_raw_dataset)
                 },
                 step=completed_steps,
             )
