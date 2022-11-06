@@ -434,7 +434,7 @@ def main():
         input_texts = examples[input_column_name]
         output_texts = examples[output_column_name]
         data = [input_ + output_ for input_, output_ in zip(input_texts, output_texts)]
-        inputs = tokenizer(data, padding="longest")
+        inputs = tokenizer(data, padding="longest", max_length=block_size, truncation=True)
         inputs["labels"] = deepcopy(inputs.input_ids)
         output_lengths = [len(tokenizer(output_string).input_ids) for output_string in output_texts]
         for i in range(len(inputs["labels"])):
@@ -616,10 +616,7 @@ def main():
     model.eval()
     losses = []
     for step, batch in enumerate(eval_dataloader):
-        print(batch)
-        print(batch["input_ids"].size())
         with torch.no_grad():
-            import pdb; pdb.set_trace()
             outputs = model(**batch)
 
         loss = outputs.loss
