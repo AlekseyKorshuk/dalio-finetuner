@@ -488,7 +488,7 @@ def main():
         },
         "zero_optimization": {
             "stage": 2,
-            "cpu_offload": False,
+            "offload_optimizer": True,
             "contiguous_gradients": True,
             "overlap_comm": True,
             "reduce_bucket_size": 5e8,
@@ -596,7 +596,7 @@ def main():
                 # "train_loss": 0 / len(train_dataloader),
                 "epoch": 0,
                 "step": completed_steps,
-                # "table": generate_table(model, tokenizer, test_raw_dataset)
+                "table": generate_table(model, tokenizer, test_raw_dataset)
             },
             step=completed_steps,
         )
@@ -669,7 +669,7 @@ def main():
                     "train_loss": total_loss.item() / len(train_dataloader),
                     "epoch": epoch,
                     "step": completed_steps,
-                    # "table": generate_table(model, tokenizer, test_raw_dataset)
+                    "table": generate_table(model, tokenizer, test_raw_dataset)
                 },
                 step=completed_steps,
             )
