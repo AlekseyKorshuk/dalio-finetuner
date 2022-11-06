@@ -495,7 +495,7 @@ def main():
         },
     }
 
-    model, optimizer, _, _ = deepspeed.initialize(
+    model, optimizer, _, lr_scheduler = deepspeed.initialize(
         config=ds_config,
         model=model,
         model_parameters=model.parameters()
@@ -508,12 +508,12 @@ def main():
         args.max_train_steps = args.num_train_epochs * num_update_steps_per_epoch
         overrode_max_train_steps = True
 
-    lr_scheduler = get_scheduler(
-        name=args.lr_scheduler_type,
-        optimizer=optimizer,
-        num_warmup_steps=args.num_warmup_steps * args.gradient_accumulation_steps,
-        num_training_steps=args.max_train_steps * args.gradient_accumulation_steps,
-    )
+    # lr_scheduler = get_scheduler(
+    #     name=args.lr_scheduler_type,
+    #     optimizer=optimizer,
+    #     num_warmup_steps=args.num_warmup_steps * args.gradient_accumulation_steps,
+    #     num_training_steps=args.max_train_steps * args.gradient_accumulation_steps,
+    # )
 
     # We need to recalculate our total training steps as the size of the training dataloader may have changed.
     num_update_steps_per_epoch = math.ceil(len(train_dataloader) / args.gradient_accumulation_steps)
