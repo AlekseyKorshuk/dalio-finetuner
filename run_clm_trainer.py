@@ -466,7 +466,7 @@ def main():
         if training_args.do_eval and not is_torch_tpu_available()
         else None,
     )
-    torch.set_autocast_cache_enabled(True)
+    torch.set_autocast_cache_enabled(False)
 
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
