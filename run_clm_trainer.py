@@ -207,7 +207,7 @@ def generate_table(model, tokenizer, test_dataset):
         del inputs
     df = DataFrame(table)
     torch.cuda.empty_cache()
-    return Table(df)
+    return Table(data=df)
 
 
 def main():
@@ -555,6 +555,8 @@ def main():
 
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
+        metrics["table"] = generate_table(trainer.model, tokenizer, raw_datasets["test"])
+        trainer.log(metrics)
 
     kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
     if data_args.dataset_name is not None:
