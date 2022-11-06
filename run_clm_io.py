@@ -616,6 +616,7 @@ def main():
     losses = []
     for step, batch in enumerate(eval_dataloader):
         print(batch)
+        print(batch["input_ids"].size())
         with torch.no_grad():
             outputs = model(**batch)
 
