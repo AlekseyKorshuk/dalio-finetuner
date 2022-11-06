@@ -504,7 +504,7 @@ def main():
     )
     torch.set_autocast_cache_enabled(False)
 
-    if training_args.do_eval:
+    if training_args.do_eval and False:
         logger.info("*** Evaluate ***")
 
         metrics = trainer.evaluate()
