@@ -30,6 +30,7 @@ import os
 import random
 from itertools import chain
 from pathlib import Path
+from copy import deepcopy
 
 import datasets
 import torch
@@ -434,7 +435,7 @@ def main():
         output_texts = examples[output_column_name]
         data = [input_ + output_ for input_, output_ in zip(input_texts, output_texts)]
         inputs = tokenizer(data, padding="longest")
-        inputs["labels"] = inputs.input_ids.copy()
+        inputs["labels"] = deepcopy(inputs.input_ids)
         output_lengths = [len(tokenizer(output_string).input_ids) for output_string in output_texts]
         for i in range(len(inputs["labels"])):
             for j in range(0, len(inputs["labels"][i]) - output_lengths[i]):
