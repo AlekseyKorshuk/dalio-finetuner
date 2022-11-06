@@ -402,7 +402,7 @@ def main():
     else:
         logger.info("Training new model from scratch")
         model = AutoModelForCausalLM.from_config(config)
-
+    model.half()
     # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
     # on a small vocab and want a smaller embedding size, remove this test.
     embedding_size = model.get_input_embeddings().weight.shape[0]
