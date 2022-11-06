@@ -13,15 +13,16 @@ python3 run_clm_trainer.py \
     --dataset_name AlekseyKorshuk/amazon-reviews-input-output \
     --do_train \
     --do_eval \
-    --fp16 \
     --logging_strategy steps \
-    --logging_steps 500 \
+    --logging_steps 50 \
+    --evaluation_strategy steps \
+    --eval_steps 50 \
     --logging_first_step \
     --report_to all \
     --per_device_train_batch_size 1 \
     --gradient_accumulation_steps 8 \
     --per_device_eval_batch_size 8 \
     --output_dir /tmp/test-clm \
-    --num_train_epochs 5 \
-    --with_tracking
-
+    --overwrite_output_dir \
+    --num_train_epochs 1 \
+    --fp16

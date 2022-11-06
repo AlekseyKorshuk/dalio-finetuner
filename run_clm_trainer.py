@@ -465,6 +465,7 @@ def main():
         if training_args.do_eval and not is_torch_tpu_available()
         else None,
     )
+    self._cache_enabled = True
 
     # Training
     if training_args.do_train:
