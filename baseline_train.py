@@ -579,7 +579,7 @@ def main():
     model.eval()
     losses = []
     for step, batch in enumerate(eval_dataloader):
-        batch = {k: v.to(0) for k, v in batch.items()}
+        # batch = {k: v.to(0) for k, v in batch.items()}
         with torch.no_grad():
             outputs = model(**batch)
 
