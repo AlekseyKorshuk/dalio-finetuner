@@ -488,7 +488,7 @@ def main():
         },
         "zero_optimization": {
             "stage": 2,
-            "offload_optimizer": True,
+            "cpu_offload": True,
             "contiguous_gradients": True,
             "overlap_comm": True,
             "reduce_bucket_size": 5e8,
