@@ -252,7 +252,7 @@ def generate_table(model, tokenizer, test_dataset):
     }
     for sample in input_texts:
         inputs = tokenizer(sample, return_tensors="pt").to(0)
-        output_ids = model.generate(**inputs, max_new_tokens=64, eos_token_id=198)
+        output_ids = model.generate(**inputs, max_new_tokens=64, eos_token_id=50118)
         output = tokenizer.decode(output_ids[0][len(inputs.input_ids[0]):])
         table["output"].append(output)
     df = DataFrame(table)
