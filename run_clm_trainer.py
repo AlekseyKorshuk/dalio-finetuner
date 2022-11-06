@@ -184,8 +184,8 @@ class DataTrainingArguments:
 
 class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
-        print(inputs)
-        input("Press Enter to continue...")
+        # print(inputs)
+        # input("Press Enter to continue...")
         outputs = model(**inputs)
         loss = outputs.get("loss")
         return (loss, outputs) if return_outputs else loss
