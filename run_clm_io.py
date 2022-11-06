@@ -417,6 +417,7 @@ def main():
 
     def tokenize_function(examples):
         print(examples[0])
+        input("Press Enter to continue...")
         # tokenized = tokenizer(examples[text_column_name])
         return tokenizer(examples[input_column_name])
 
