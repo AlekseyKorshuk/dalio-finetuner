@@ -475,7 +475,7 @@ def main():
 
     ds_config = {
         "train_batch_size": 8,
-        "gradient_accumulation_steps": 8,
+        "gradient_accumulation_steps": 2,
         "train_micro_batch_size_per_gpu": 1,
         "optimizer": {
             "type": "Adam",
