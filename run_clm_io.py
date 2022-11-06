@@ -636,7 +636,7 @@ def main():
             {
                 "perplexity": perplexity,
                 "eval_loss": eval_loss,
-                "train_loss": 0 / len(train_dataloader),
+                # "train_loss": 0 / len(train_dataloader),
                 "epoch": 0,
                 "step": completed_steps,
                 "table": generate_table(model, tokenizer, test_raw_dataset)
