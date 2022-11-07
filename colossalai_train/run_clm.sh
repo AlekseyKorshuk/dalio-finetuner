@@ -23,7 +23,6 @@ torchrun \
   --eval_steps 1 \
   --logging_first_step \
   --report_to all \
-  --output_dir /tmp/test-clm \
   --overwrite_output_dir \
   --num_train_epochs 5 \
   --fp16 \
