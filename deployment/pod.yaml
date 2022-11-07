@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   labels:
     qos.coreweave.cloud/latency: low
-  name: aleksey-3
+  name: aleksey-1
   namespace: tenant-chairesearch-test
 spec:
   volumes:
@@ -20,13 +20,13 @@ spec:
       args: [ "infinity" ]
       resources:
         limits:
-          cpu: "6"
+          cpu: "94"
           nvidia.com/gpu: "8"
-          memory: 228Gi
+          memory: 716Gi
         requests:
-          cpu: "6"
+          cpu: "94"
           nvidia.com/gpu: "8"
-          memory: 228Gi
+          memory: 716Gi
       volumeMounts:
         - name: storage-reward-models
           mountPath: /models
