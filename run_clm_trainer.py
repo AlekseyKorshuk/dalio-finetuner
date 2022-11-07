@@ -511,8 +511,11 @@ def main():
     )
     torch.set_autocast_cache_enabled(False)
 
-    if training_args.do_eval:
-        model_evaluate(model, log_table=False)
+    # Deepspeed error:
+    # AssertionError: {'id': 1, 'status': 'INFLIGHT', 'numel': 0, 'ds_numel': 8396800, 'shape': (0,), 'ds_shape': (2050, 4096), 'requires_grad': True, 'grad_shape': None, 'persist':
+    # False, 'active_sub_modules': {363}}
+    # if training_args.do_eval:
+    #     model_evaluate(model, log_table=False)
 
     if training_args.do_train:
         checkpoint = None

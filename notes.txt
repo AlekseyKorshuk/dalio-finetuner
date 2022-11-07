@@ -16,7 +16,7 @@ deepspeed run_clm_trainer.py \
     --report_to all \
     --output_dir /tmp/test-clm \
     --overwrite_output_dir \
-    --num_train_epochs 2 \
+    --num_train_epochs 1 \
     --fp16 \
     --push_to_hub \
     --hub_model_id "AlekseyKorshuk/amazon-reviews-input-output-6.7b-best" \
