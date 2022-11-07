@@ -17,7 +17,6 @@ torchrun \
   --output_dir $PWD \
   --mem_cap ${MEMCAP} \
   --per_device_train_batch_size ${BS} 2>&1 | tee ./logs/colo_${MODEL}_bs_${BS}_cap_${MEMCAP}_gpu_${GPUNUM}.log \
-  --overwrite_output_dir \
   --do_train \
   --do_eval \
   --logging_strategy steps \
