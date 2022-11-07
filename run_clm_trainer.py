@@ -10,6 +10,7 @@ from typing import Optional
 import datasets
 import torch
 from datasets import load_dataset
+from wandb import Table
 
 import evaluate
 import transformers
@@ -33,8 +34,6 @@ from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
-from wandb import Table
-
 check_min_version("4.24.0")
 
 require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/language-modeling/requirements.txt")
@@ -180,15 +179,6 @@ class DataTrainingArguments:
             if self.validation_file is not None:
                 extension = self.validation_file.split(".")[-1]
                 assert extension in ["csv", "json", "txt"], "`validation_file` should be a csv, a json or a txt file."
-
-
-class CustomTrainer(Trainer):
-    def compute_loss(self, model, inputs, return_outputs=False):
-        # print(inputs)
-        # input("Press Enter to continue...")
-        outputs = model(**inputs)
-        loss = outputs.get("loss")
-        return (loss, outputs) if return_outputs else loss
 
 
 def generate_table(model, tokenizer, test_dataset):
@@ -504,7 +494,7 @@ def main():
     )
     torch.set_autocast_cache_enabled(False)
 
-    if training_args.do_eval and False:
+    def model_evaluate():
         logger.info("*** Evaluate ***")
 
         metrics = trainer.evaluate()
@@ -517,14 +507,14 @@ def main():
             perplexity = float("inf")
         metrics["perplexity"] = perplexity
 
-        print("METRICS:", metrics)
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
-        # metrics["table"] = generate_table(trainer.model, tokenizer, raw_datasets["test"])
-        # trainer.log(metrics)
+        metrics["table"] = generate_table(trainer.model, tokenizer, raw_datasets["test"])
+        trainer.log(metrics)
 
+    if training_args.do_eval:
+        model_evaluate()
 
-    # Training
     if training_args.do_train:
         checkpoint = None
         if training_args.resume_from_checkpoint is not None:
@@ -545,24 +535,8 @@ def main():
         trainer.save_metrics("train", metrics)
         trainer.save_state()
 
-    # Evaluation
     if training_args.do_eval:
-        logger.info("*** Evaluate ***")
-
-        metrics = trainer.evaluate()
-
-        max_eval_samples = data_args.max_eval_samples if data_args.max_eval_samples is not None else len(eval_dataset)
-        metrics["eval_samples"] = min(max_eval_samples, len(eval_dataset))
-        try:
-            perplexity = math.exp(metrics["eval_loss"])
-        except OverflowError:
-            perplexity = float("inf")
-        metrics["perplexity"] = perplexity
-
-        trainer.log_metrics("eval", metrics)
-        trainer.save_metrics("eval", metrics)
-        metrics["table"] = generate_table(trainer.model, tokenizer, raw_datasets["test"])
-        trainer.log(metrics)
+        model_evaluate()
 
     kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
     if data_args.dataset_name is not None:
