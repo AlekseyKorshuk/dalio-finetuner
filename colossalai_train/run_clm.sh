@@ -17,14 +17,8 @@ torchrun \
   --output_dir $PWD \
   --mem_cap ${MEMCAP} \
   --per_device_train_batch_size ${BS} 2>&1 | tee ./logs/colo_${MODEL}_bs_${BS}_cap_${MEMCAP}_gpu_${GPUNUM}.log \
-  --logging_strategy steps \
-  --logging_steps 1 \
-  --evaluation_strategy steps \
-  --eval_steps 1 \
-  --logging_first_step \
+  --with_tracking \
   --report_to all \
-  --overwrite_output_dir \
   --num_train_epochs 5 \
-  --fp16 \
   --push_to_hub \
   --hub_model_id "AlekseyKorshuk/amazon-reviews-input-output-1.3b" \
