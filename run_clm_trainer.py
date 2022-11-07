@@ -496,9 +496,6 @@ def main():
         metrics["table"] = generate_table(model, tokenizer, raw_datasets["test"])
         trainer.log(metrics)
 
-    if training_args.do_eval:
-        model_evaluate(model)
-
     # Initialize our Trainer
     trainer = Trainer(
         model=model,
@@ -514,6 +511,10 @@ def main():
         else None,
     )
     torch.set_autocast_cache_enabled(False)
+
+    # NOTE: removed because it crashes training after inference
+    # if training_args.do_eval:
+    #     model_evaluate(model)
 
     if training_args.do_train:
         checkpoint = None
