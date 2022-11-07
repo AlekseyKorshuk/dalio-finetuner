@@ -9,6 +9,7 @@ from typing import Optional
 
 import datasets
 import torch
+import tqdm
 from datasets import load_dataset
 from wandb import Table
 
@@ -190,10 +191,10 @@ def generate_table(model, tokenizer, test_dataset):
         "output": [],
         "target": output_texts
     }
-    for sample in input_texts:
+    for sample in tqdm.tqdm(input_texts):
         inputs = tokenizer(sample, return_tensors="pt")
         inputs.to(model.device)
-        output_ids = model.generate(**inputs, max_new_tokens=64, eos_token_id=50118)
+        output_ids = model.generate(**inputs, max_new_tokens=32, eos_token_id=50118)
         output = tokenizer.decode(output_ids[0][len(inputs.input_ids[0]):])
         table["output"].append(output)
         del inputs
