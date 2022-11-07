@@ -20,12 +20,12 @@ spec:
       args: [ "infinity" ]
       resources:
         limits:
-          cpu: "12"
-          nvidia.com/gpu: "12"
+          cpu: "6"
+          nvidia.com/gpu: "8"
           memory: 228Gi
         requests:
           cpu: "6"
-          nvidia.com/gpu: "12"
+          nvidia.com/gpu: "8"
           memory: 228Gi
       volumeMounts:
         - name: storage-reward-models
