@@ -183,7 +183,6 @@ class DataTrainingArguments:
 
 
 def generate_table(model, tokenizer, test_dataset):
-    print("Generating table...")
     input_texts = test_dataset["input_text"]
     output_texts = test_dataset["output_text"]
     table = {
@@ -191,7 +190,7 @@ def generate_table(model, tokenizer, test_dataset):
         "output": [],
         "target": output_texts
     }
-    for sample in tqdm.tqdm(input_texts):
+    for sample in tqdm.tqdm(input_texts, desc="Generating table"):
         inputs = tokenizer(sample, return_tensors="pt")
         inputs.to(model.device)
         output_ids = model.generate(**inputs, max_new_tokens=32, eos_token_id=50118)
