@@ -478,6 +478,27 @@ def main():
             metrics = metric.compute(predictions=preds, references=labels)
             return metrics
 
+    def model_evaluate(model):
+        logger.info("*** Evaluate ***")
+
+        metrics = trainer.evaluate()
+
+        max_eval_samples = data_args.max_eval_samples if data_args.max_eval_samples is not None else len(eval_dataset)
+        metrics["eval_samples"] = min(max_eval_samples, len(eval_dataset))
+        try:
+            perplexity = math.exp(metrics["eval_loss"])
+        except OverflowError:
+            perplexity = float("inf")
+        metrics["perplexity"] = perplexity
+
+        trainer.log_metrics("eval", metrics)
+        trainer.save_metrics("eval", metrics)
+        metrics["table"] = generate_table(model, tokenizer, raw_datasets["test"])
+        trainer.log(metrics)
+
+    if training_args.do_eval:
+        model_evaluate(model)
+
     # Initialize our Trainer
     trainer = Trainer(
         model=model,
@@ -493,27 +514,6 @@ def main():
         else None,
     )
     torch.set_autocast_cache_enabled(False)
-
-    def model_evaluate():
-        logger.info("*** Evaluate ***")
-
-        metrics = trainer.evaluate()
-
-        max_eval_samples = data_args.max_eval_samples if data_args.max_eval_samples is not None else len(eval_dataset)
-        metrics["eval_samples"] = min(max_eval_samples, len(eval_dataset))
-        try:
-            perplexity = math.exp(metrics["eval_loss"])
-        except OverflowError:
-            perplexity = float("inf")
-        metrics["perplexity"] = perplexity
-
-        trainer.log_metrics("eval", metrics)
-        trainer.save_metrics("eval", metrics)
-        metrics["table"] = generate_table(trainer.model, tokenizer, raw_datasets["test"])
-        trainer.log(metrics)
-
-    if training_args.do_eval:
-        model_evaluate()
 
     if training_args.do_train:
         checkpoint = None
@@ -536,7 +536,7 @@ def main():
         trainer.save_state()
 
     if training_args.do_eval:
-        model_evaluate()
+        model_evaluate(trainer.model)
 
     kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
     if data_args.dataset_name is not None:
