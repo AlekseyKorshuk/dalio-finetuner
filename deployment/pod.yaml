@@ -21,11 +21,11 @@ spec:
       resources:
         limits:
           cpu: "12"
-          nvidia.com/gpu: "8"
+          nvidia.com/gpu: "12"
           memory: 228Gi
         requests:
           cpu: "6"
-          nvidia.com/gpu: "8"
+          nvidia.com/gpu: "12"
           memory: 228Gi
       volumeMounts:
         - name: storage-reward-models
