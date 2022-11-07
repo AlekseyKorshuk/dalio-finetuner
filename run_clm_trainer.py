@@ -476,7 +476,7 @@ def main():
             metrics = metric.compute(predictions=preds, references=labels)
             return metrics
 
-    def model_evaluate(model):
+    def model_evaluate(model, log_table=False):
         logger.info("*** Evaluate ***")
 
         metrics = trainer.evaluate()
@@ -491,8 +491,9 @@ def main():
 
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
-        metrics["table"] = generate_table(model, tokenizer, raw_datasets["test"])
-        trainer.log(metrics)
+        if log_table:
+            metrics["table"] = generate_table(model, tokenizer, raw_datasets["test"])
+            trainer.log(metrics)
 
     # Initialize our Trainer
     trainer = Trainer(
@@ -510,9 +511,8 @@ def main():
     )
     torch.set_autocast_cache_enabled(False)
 
-    # NOTE: removed because it crashes training after inference
-    # if training_args.do_eval:
-    #     model_evaluate(model)
+    if training_args.do_eval:
+        model_evaluate(model, log_table=False)
 
     if training_args.do_train:
         checkpoint = None
@@ -535,7 +535,7 @@ def main():
         trainer.save_state()
 
     if training_args.do_eval:
-        model_evaluate(trainer.model)
+        model_evaluate(trainer.model, log_table=True)
 
     kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
     if data_args.dataset_name is not None:
