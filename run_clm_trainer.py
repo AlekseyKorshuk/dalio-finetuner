@@ -193,7 +193,7 @@ def generate_table(model, tokenizer, test_dataset):
     for sample in tqdm.tqdm(input_texts, desc="Generating table"):
         inputs = tokenizer(sample, return_tensors="pt")
         inputs.to(model.device)
-        output_ids = model.generate(**inputs, max_new_tokens=32, eos_token_id=50118)
+        output_ids = model.generate(**inputs, max_new_tokens=64, eos_token_id=50118)
         output = tokenizer.decode(output_ids[0][len(inputs.input_ids[0]):])
         table["output"].append(output)
         del inputs
@@ -438,8 +438,6 @@ def main():
             load_from_cache_file=not data_args.overwrite_cache,
             desc="Running tokenizer on dataset",
         )
-
-    with training_args.main_process_first(desc="grouping texts together"):
         lm_datasets = tokenized_datasets
 
     print("Example data:", lm_datasets["train"][0])
