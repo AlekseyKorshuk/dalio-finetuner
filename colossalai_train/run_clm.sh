@@ -16,9 +16,9 @@ torchrun \
   --model_name_or_path facebook/opt-${MODEL} \
   --output_dir $PWD \
   --mem_cap ${MEMCAP} \
-  --per_device_train_batch_size ${BS} 2>&1 | tee ./logs/colo_${MODEL}_bs_${BS}_cap_${MEMCAP}_gpu_${GPUNUM}.log \
   --with_tracking \
   --report_to all \
   --num_train_epochs 5 \
   --push_to_hub \
   --hub_model_id "AlekseyKorshuk/amazon-reviews-input-output-1.3b" \
+  --per_device_train_batch_size ${BS} 2>&1 | tee ./logs/colo_${MODEL}_bs_${BS}_cap_${MEMCAP}_gpu_${GPUNUM}.log
