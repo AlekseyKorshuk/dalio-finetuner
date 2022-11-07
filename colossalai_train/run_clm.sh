@@ -12,9 +12,23 @@ torchrun \
   --nproc_per_node ${GPUNUM} \
   --master_port 19198 \
   run_clm.py \
-  --dataset_name wikitext \
-  --dataset_config_name wikitext-2-raw-v1 \
+  --dataset_name AlekseyKorshuk/amazon-reviews-input-output \
   --model_name_or_path facebook/opt-${MODEL} \
   --output_dir $PWD \
   --mem_cap ${MEMCAP} \
-  --per_device_train_batch_size ${BS} 2>&1 | tee ./logs/colo_${MODEL}_bs_${BS}_cap_${MEMCAP}_gpu_${GPUNUM}.log
+  --per_device_train_batch_size ${BS} 2>&1 | tee ./logs/colo_${MODEL}_bs_${BS}_cap_${MEMCAP}_gpu_${GPUNUM}.log \
+  --overwrite_output_dir \
+  --do_train \
+  --do_eval \
+  --logging_strategy steps \
+  --logging_steps 1 \
+  --evaluation_strategy steps \
+  --eval_steps 1 \
+  --logging_first_step \
+  --report_to all \
+  --output_dir /tmp/test-clm \
+  --overwrite_output_dir \
+  --num_train_epochs 5 \
+  --fp16 \
+  --push_to_hub \
+  --hub_model_id "AlekseyKorshuk/amazon-reviews-input-output-1.3b" \
