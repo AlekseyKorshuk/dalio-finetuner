@@ -400,12 +400,12 @@ def main():
 
     if data_args.block_size is None:
         block_size = tokenizer.model_max_length
-        if block_size > 1024:
+        if block_size > 2048:
             logger.warning(
                 f"The tokenizer picked seems to have a very large `model_max_length` ({tokenizer.model_max_length}). "
                 "Picking 1024 instead. You can change that default value by passing --block_size xxx."
             )
-            block_size = 1024
+            block_size = 2048
     else:
         if data_args.block_size > tokenizer.model_max_length:
             logger.warning(
