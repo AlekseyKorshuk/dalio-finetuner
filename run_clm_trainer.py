@@ -33,6 +33,7 @@ from transformers.testing_utils import CaptureLogger
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
+import hellaswag
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 check_min_version("4.24.0")
@@ -495,6 +496,20 @@ def main():
             metrics["table"] = generate_table(model, tokenizer, raw_datasets["test"])
             trainer.log(metrics)
 
+    callback_args = {
+        'max_new_tokens': 64,
+        'eos_token_id': 50118,
+        'repetition_penalty': 1.1,
+        'temperature': 1.0,
+    }
+    callbacks = []
+    callback = hellaswag.HellaswagCallback(
+        tokenizer=tokenizer,
+        params=callback_args,
+        num_prompts=32
+    )
+    callbacks.append(callback)
+
     # Initialize our Trainer
     trainer = Trainer(
         model=model,
@@ -508,6 +523,7 @@ def main():
         preprocess_logits_for_metrics=preprocess_logits_for_metrics
         if training_args.do_eval and not is_torch_tpu_available()
         else None,
+        callbacks=callbacks
     )
     torch.set_autocast_cache_enabled(False)
 
