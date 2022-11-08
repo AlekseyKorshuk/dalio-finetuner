@@ -32,7 +32,7 @@ class HellaswagCallback(TrainerCallback):
             wandb.log({
                 'hellaswag/accuracy': accuracy,
                 'hellaswag/perplexity': perplexity
-            }, step=state.global_step)
+            })
 
 
 def load_hellaswag_dataset():

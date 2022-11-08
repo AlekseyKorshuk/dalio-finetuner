@@ -36,7 +36,7 @@ class RecordExampleAnswersCallback(TrainerCallback):
 
         # if using deepspeed only log for the main process
         if state.is_world_process_zero:
-            wandb.log({'eval_table': table}, step=state.global_step)
+            wandb.log({'eval_table': table})
 
 
 def generate_table(model, tokenizer, test_dataset, params):
