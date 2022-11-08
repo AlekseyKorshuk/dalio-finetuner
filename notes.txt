@@ -4,14 +4,14 @@ apt-get update && apt-get -y upgrade && apt-get install -y libopenmpi-dev && pip
 git clone https://github.com/AlekseyKorshuk/dalio-finetuner && cd dalio-finetuner && pip install -r requirements.txt && pip install torch==1.12.1+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html && apt-get update && apt-get -y upgrade && apt-get install -y libopenmpi-dev && pip install mpi4py && wandb login && huggingface-cli login
 
 deepspeed run_clm_trainer.py \
-    --model_name_or_path facebook/opt-6.7b \
+    --model_name_or_path facebook/opt-150m \
     --dataset_name AlekseyKorshuk/dalio-v1 \
     --do_train \
     --do_eval \
     --logging_strategy steps \
-    --logging_steps 16 \
+    --logging_steps 1 \
     --evaluation_strategy steps \
-    --eval_steps 16 \
+    --eval_steps 1 \
     --logging_first_step \
     --report_to all \
     --output_dir /tmp/test-clm \
@@ -19,8 +19,9 @@ deepspeed run_clm_trainer.py \
     --num_train_epochs 2 \
     --fp16 \
     --push_to_hub \
-    --hub_model_id "AlekseyKorshuk/dalio-6.7b-test" \
+    --hub_model_id "AlekseyKorshuk/dalio-150m-test" \
     --deepspeed ds_config.json \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 1 \
+    --load_best_model_at_end \
     --lr_scheduler_type cosine

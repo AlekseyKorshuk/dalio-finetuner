@@ -36,6 +36,8 @@ from transformers.utils.versions import require_version
 import hellaswag
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
+import prompts
+
 check_min_version("4.24.0")
 
 require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/language-modeling/requirements.txt")
@@ -181,26 +183,6 @@ class DataTrainingArguments:
             if self.validation_file is not None:
                 extension = self.validation_file.split(".")[-1]
                 assert extension in ["csv", "json", "txt"], "`validation_file` should be a csv, a json or a txt file."
-
-
-def generate_table(model, tokenizer, test_dataset):
-    input_texts = test_dataset["input_text"]
-    output_texts = test_dataset["output_text"]
-    table = {
-        "input": input_texts,
-        "output": [],
-        "target": output_texts
-    }
-    for sample in tqdm.tqdm(input_texts, desc="Generating table"):
-        inputs = tokenizer(sample, return_tensors="pt")
-        inputs.to(model.device)
-        output_ids = model.generate(**inputs, max_new_tokens=64, eos_token_id=50118)
-        output = tokenizer.decode(output_ids[0][len(inputs.input_ids[0]):])
-        table["output"].append(output)
-        del inputs
-    df = DataFrame(table)
-    torch.cuda.empty_cache()
-    return Table(data=df)
 
 
 def main():
@@ -477,7 +459,7 @@ def main():
             metrics = metric.compute(predictions=preds, references=labels)
             return metrics
 
-    def model_evaluate(model, log_table=False):
+    def model_evaluate(model):
         logger.info("*** Evaluate ***")
 
         metrics = trainer.evaluate()
@@ -492,9 +474,6 @@ def main():
 
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
-        if log_table:
-            metrics["table"] = generate_table(model, tokenizer, raw_datasets["test"])
-            trainer.log(metrics)
 
     callback_args = {
         'max_new_tokens': 64,
@@ -507,6 +486,12 @@ def main():
         tokenizer=tokenizer,
         params=callback_args,
         num_prompts=32
+    )
+    callbacks.append(callback)
+    callback = prompts.RecordExampleAnswersCallback(
+        dataset=raw_datasets["test"],
+        tokenizer=tokenizer,
+        params=callback_args,
     )
     callbacks.append(callback)
 
@@ -554,7 +539,7 @@ def main():
         trainer.save_state()
 
     if training_args.do_eval:
-        model_evaluate(trainer.model, log_table=True)
+        model_evaluate(trainer.model)
 
     kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
     if data_args.dataset_name is not None:
