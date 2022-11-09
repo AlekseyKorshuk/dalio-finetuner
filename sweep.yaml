@@ -8,7 +8,7 @@ metric:
   goal: minimize
 parameters:
   learning_rate:
-    min: 0.00001
+    min: 0.000001
     max: 0.01
   model_name_or_path:
     value: facebook/opt-1.3b
@@ -35,7 +35,7 @@ parameters:
   overwrite_output_dir:
     value: 1
   num_train_epochs:
-    value: 1
+    values: [1, 2, 3, 4, 5]
   fp16:
     value: 1
   hub_model_id:
