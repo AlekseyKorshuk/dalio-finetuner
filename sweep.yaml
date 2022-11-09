@@ -1,5 +1,6 @@
 command:
-  - "deepspeed run_clm_trainer.py --model_name_or_path facebook/opt-1.3b --dataset_name AlekseyKorshuk/dalio-v1 --do_train --do_eval --logging_strategy steps"
+  - "deepspeed"
+  - "run_clm_trainer.py"
   - ${args}
 method: bayes
 metric:
@@ -9,3 +10,41 @@ parameters:
   learning_rate:
     min: 0.00001
     max: 0.01
+  model_name_or_path:
+    value: facebook/opt-1.3b
+  dataset_name:
+    value: AlekseyKorshuk/dalio-v1
+  do_train:
+    value: 1
+  do_eval:
+    value: 1
+  logging_strategy:
+    value: steps
+  logging_steps:
+    value: 1
+  evaluation_strategy:
+    value: steps
+  eval_steps:
+    value: 1
+  logging_first_step:
+    value: 1
+  report_to:
+    value: all
+  output_dir:
+    value: /tmp/test-clm
+  overwrite_output_dir:
+    value: 1
+  num_train_epochs:
+    value: 1
+  fp16:
+    value: 1
+  hub_model_id:
+    value: AlekseyKorshuk/dalio-1.3b-test
+  deepspeed:
+    value: ds_config.json
+  per_device_train_batch_size:
+    value: 4
+  per_device_eval_batch_size:
+    value: 4
+  lr_scheduler_type:
+    value: cosine
