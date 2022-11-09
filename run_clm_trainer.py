@@ -489,7 +489,7 @@ def main():
     callback_args = {
         'max_new_tokens': 64,
         'eos_token_id': 50118,
-        'repetition_penalty': 1.1,
+        # 'repetition_penalty': 1.1,
         'temperature': 1.0,
     }
     callbacks = []
@@ -549,8 +549,8 @@ def main():
         trainer.save_metrics("train", metrics)
         trainer.save_state()
 
-    if training_args.do_eval:
-        model_evaluate(trainer.model)
+    # if training_args.do_eval:
+    #     model_evaluate(trainer.model)
 
     kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
     if data_args.dataset_name is not None:
