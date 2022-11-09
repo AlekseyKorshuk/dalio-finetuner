@@ -35,7 +35,7 @@ parameters:
   overwrite_output_dir:
     value: 1
   num_train_epochs:
-    values: 3
+    value: 3
   fp16:
     value: 1
   hub_model_id:
