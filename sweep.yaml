@@ -9,7 +9,7 @@ metric:
 parameters:
   learning_rate:
     min: 0.000001
-    max: 0.01
+    max: 0.00001
   model_name_or_path:
     value: facebook/opt-1.3b
   dataset_name:
@@ -35,7 +35,7 @@ parameters:
   overwrite_output_dir:
     value: 1
   num_train_epochs:
-    values: [1, 2, 3, 4, 5]
+    values: 3
   fp16:
     value: 1
   hub_model_id:
