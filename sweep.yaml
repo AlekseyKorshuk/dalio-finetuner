@@ -1,0 +1,34 @@
+command:
+  - "deepspeed"
+  - "run_clm_trainer.py"
+  - "--config"
+  - "--model_name_or_path facebook/opt-1.3b"
+  - "--dataset_name AlekseyKorshuk/dalio-v1"
+  - "--do_train"
+  - "--do_eval"
+  - "--logging_strategy steps"
+  - "--logging_steps 1"
+  - "--evaluation_strategy steps"
+  - "--eval_steps 1"
+  - "--logging_first_step"
+  - "--report_to all"
+  - "--output_dir /tmp/test-clm"
+  - "--overwrite_output_dir"
+  - "--num_train_epochs 1"
+  - "--fp16"
+  - "--push_to_hub"
+  - "--hub_model_id AlekseyKorshuk/dalio-1.3b-test"
+  - "--deepspeed ds_config.json"
+  - "--per_device_train_batch_size 4"
+  - "--per_device_eval_batch_size 4"
+  - "--load_best_model_at_end"
+  - "--lr_scheduler_type cosine"
+  - ${args}
+method: bayes
+metric:
+  name: eval/loss
+  goal: minimize
+parameters:
+  learning_rate:
+    min: 0.00001
+    max: 0.01
