@@ -23,9 +23,10 @@ class HellaswagCallback(TrainerCallback):
         logger.info('calculating hellaswag metrics')
         model = kwargs.get('model')
 
-        accuracy, perplexity = score_hellaswag(
-            self.ds, model, self.tokenizer, self.num_prompts, self.params
-        )
+        with torch.no_grad():
+            accuracy, perplexity = score_hellaswag(
+                self.ds, model, self.tokenizer, self.num_prompts, self.params
+            )
 
         # if using deepspeed only log for the main process
         if state.is_world_process_zero:
