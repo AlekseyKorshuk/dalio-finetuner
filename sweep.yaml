@@ -1,7 +1,6 @@
 command:
   - "deepspeed"
   - "run_clm_trainer.py"
-  - "--config"
   - "--model_name_or_path facebook/opt-1.3b"
   - "--dataset_name AlekseyKorshuk/dalio-v1"
   - "--do_train"
