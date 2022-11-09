@@ -48,3 +48,5 @@ parameters:
     value: 4
   lr_scheduler_type:
     value: cosine
+  warmup_steps:
+    value: 3
