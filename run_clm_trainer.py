@@ -185,18 +185,25 @@ class DataTrainingArguments:
                 assert extension in ["csv", "json", "txt"], "`validation_file` should be a csv, a json or a txt file."
 
 
+@dataclass
+class CustomArguments:
+    casual_loss: bool = field(
+        default=False, metadata={"help": "Whenever to calculate the loss on the full text."}
+    )
+
+
 def main():
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
 
-    parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
+    parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments, CustomArguments))
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
         # let's parse it to get our arguments.
-        model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
+        model_args, data_args, training_args, custom_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
-        model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+        model_args, data_args, training_args, custom_args = parser.parse_args_into_dataclasses()
 
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
@@ -406,6 +413,10 @@ def main():
         data = [input_ + output_ for input_, output_ in zip(input_texts, output_texts)]
         inputs = tokenizer(data, padding="longest", max_length=block_size, truncation=True)
         inputs["labels"] = deepcopy(inputs.input_ids)
+
+        if custom_args.casual_loss:
+            return inputs
+
         output_lengths = [len(tokenizer(output_string).input_ids) for output_string in output_texts]
         for i in range(len(inputs["labels"])):
             for j in range(0, len(inputs["labels"][i]) - output_lengths[i]):
