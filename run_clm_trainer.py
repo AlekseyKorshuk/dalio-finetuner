@@ -491,6 +491,8 @@ def main():
         'eos_token_id': 50118,
         # 'repetition_penalty': 1.1,
         'temperature': 1.0,
+        "penalty_alpha": 0.6,
+        "top_k": 4
     }
     callbacks = []
     # callback = hellaswag.HellaswagCallback(
