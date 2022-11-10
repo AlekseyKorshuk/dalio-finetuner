@@ -438,8 +438,6 @@ def main():
         )
         lm_datasets = tokenized_datasets
 
-    print("Example data:", lm_datasets["train"][0])
-
     if training_args.do_train:
         if "train" not in tokenized_datasets:
             raise ValueError("--do_train requires a train dataset")
@@ -493,10 +491,10 @@ def main():
     callback_args = {
         'max_new_tokens': 64,
         'eos_token_id': 50118,
-        # 'repetition_penalty': 1.1,
+        'repetition_penalty': 1.1,
         'temperature': 1.0,
-        "penalty_alpha": 0.6,
-        "top_k": 4
+        # "penalty_alpha": 0.6,
+        # "top_k": 4
     }
     callbacks = []
     callback = hellaswag.HellaswagCallback(

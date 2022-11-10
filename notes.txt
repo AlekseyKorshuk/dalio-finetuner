@@ -5,12 +5,12 @@ git clone https://github.com/AlekseyKorshuk/dalio-finetuner && cd dalio-finetune
 
 deepspeed run_clm_trainer.py \
     --model_name_or_path facebook/opt-1.3b \
-    --dataset_name AlekseyKorshuk/dalio-v1 \
+    --dataset_name AlekseyKorshuk/dalio-handwritten-io \
     --do_train \
     --do_eval \
-    --logging_strategy epoch \
+    --logging_strategy steps \
     --logging_steps 1 \
-    --evaluation_strategy epoch \
+    --evaluation_strategy steps \
     --eval_steps 1 \
     --logging_first_step \
     --report_to all \
@@ -19,6 +19,9 @@ deepspeed run_clm_trainer.py \
     --num_train_epochs 1 \
     --fp16 \
     --deepspeed ds_config.json \
-    --per_device_train_batch_size 4 \
-    --per_device_eval_batch_size 4 \
-    --learning_rate 3e-5
+    --per_device_train_batch_size 8 \
+    --per_device_eval_batch_size 8 \
+    --learning_rate 3e-5 \
+    --push_to_hub \
+    --load_best_model_at_end \
+    --hub_model_id AlekseyKorshuk/dalio-handwritten-io-1.3b
