@@ -8,9 +8,9 @@ deepspeed run_clm_trainer.py \
     --dataset_name AlekseyKorshuk/dalio-handwritten-io \
     --do_train \
     --do_eval \
-    --logging_strategy steps \
+    --logging_strategy epoch \
     --logging_steps 1 \
-    --evaluation_strategy steps \
+    --evaluation_strategy epoch \
     --eval_steps 1 \
     --logging_first_step \
     --report_to all \
@@ -24,7 +24,8 @@ deepspeed run_clm_trainer.py \
     --learning_rate 3e-5 \
     --push_to_hub \
     --load_best_model_at_end \
-    --hub_model_id AlekseyKorshuk/dalio-handwritten-io-1.3b \
+    --hub_model_id AlekseyKorshuk/dalio-handwritten-io-1.3b
+
 && deepspeed run_clm_trainer.py \
     --model_name_or_path facebook/opt-1.3b \
     --dataset_name AlekseyKorshuk/dalio-synthetic-io \
