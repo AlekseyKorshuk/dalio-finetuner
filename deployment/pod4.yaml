@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    qos.coreweave.cloud/latency: low
+  name: 30b-training-4
+  namespace: tenant-chairesearch-test
+spec:
+  volumes:
+    - name: ak-finetunes
+      persistentVolumeClaim:
+        claimName: ak-finetunes
+  imagePullSecrets:
+    - name: docker-creds
+  containers:
+    - name: bot-test-container
+      image: gcr.io/chai-959f8/training:cuda-ppo
+      imagePullPolicy: Always
+      command: [ "sleep" ]
+      args: [ "infinity" ]
+      resources:
+        limits:
+          cpu: "94"
+          nvidia.com/gpu: "8"
+          memory: 716Gi
+        requests:
+          cpu: "94"
+          nvidia.com/gpu: "8"
+          memory: 716Gi
+      volumeMounts:
+        - name: ak-finetunes
+          mountPath: /models
+      readinessProbe:
+        exec:
+          command:
+            - cat
+            - /tmp/ready
+        failureThreshold: 1
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        successThreshold: 1
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 20
+          preference:
+            matchExpressions:
+              - key: gpu.nvidia.com/class
+                operator: In
+                values:
+                  - A40
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: gpu.nvidia.com/class
+                operator: In
+                values:
+                  - A40
