@@ -20,6 +20,7 @@ class HellaswagCallback(TrainerCallback):
         self.ds = load_hellaswag_dataset()
 
     def on_evaluate(self, args, state, control, **kwargs):
+        print(state.__dict__)
         logger.info('calculating hellaswag metrics')
         model = kwargs.get('model')
 

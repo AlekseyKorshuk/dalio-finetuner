@@ -497,12 +497,12 @@ def main():
         # "top_k": 4
     }
     callbacks = []
-    # callback = hellaswag.HellaswagCallback(
-    #     tokenizer=tokenizer,
-    #     params=callback_args,
-    #     num_prompts=32
-    # )
-    # callbacks.append(callback)
+    callback = hellaswag.HellaswagCallback(
+        tokenizer=tokenizer,
+        params=callback_args,
+        num_prompts=32
+    )
+    callbacks.append(callback)
     # callback = prompts.RecordExampleAnswersCallback(
     #     dataset=raw_datasets["test"],
     #     tokenizer=tokenizer,
