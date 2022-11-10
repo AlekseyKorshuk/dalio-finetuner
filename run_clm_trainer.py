@@ -201,7 +201,8 @@ def main():
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
         # let's parse it to get our arguments.
-        model_args, data_args, training_args, custom_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
+        model_args, data_args, training_args, custom_args = parser.parse_json_file(
+            json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args, custom_args = parser.parse_args_into_dataclasses()
 
@@ -404,19 +405,22 @@ def main():
             )
         block_size = min(data_args.block_size, tokenizer.model_max_length)
 
-    input_column_name = "input_text" if "input_text" in column_names else column_names[0]
-    output_column_name = "output_text" if "output_text" in column_names else column_names[1]
+    if "text" in column_names or len(column_names) == 1:
+        text_column_name = "text"
+    else:
+        input_column_name = "input_text" if "input_text" in column_names else column_names[0]
+        output_column_name = "output_text" if "output_text" in column_names else column_names[1]
 
     def tokenize_function(examples):
+        if "text" in column_names:
+            inputs = tokenizer(examples[text_column_name], padding="longest", max_length=block_size, truncation=True)
+            inputs["labels"] = deepcopy(inputs.input_ids)
+            return inputs
         input_texts = examples[input_column_name]
         output_texts = examples[output_column_name]
         data = [input_ + output_ for input_, output_ in zip(input_texts, output_texts)]
         inputs = tokenizer(data, padding="longest", max_length=block_size, truncation=True)
         inputs["labels"] = deepcopy(inputs.input_ids)
-
-        if custom_args.casual_loss:
-            return inputs
-
         output_lengths = [len(tokenizer(output_string).input_ids) for output_string in output_texts]
         for i in range(len(inputs["labels"])):
             for j in range(0, len(inputs["labels"][i]) - output_lengths[i]):
