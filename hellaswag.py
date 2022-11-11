@@ -21,7 +21,7 @@ class HellaswagCallback(TrainerCallback):
         self.ds = load_hellaswag_dataset()
 
     def on_evaluate(self, args, state, control, **kwargs):
-        if state.global_step != state.max_steps:
+        if not float(state.num_train_epochs).is_integer():
             return
 
         logger.info('calculating hellaswag metrics')
