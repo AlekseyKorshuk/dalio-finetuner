@@ -20,6 +20,7 @@ class HellaswagCallback(TrainerCallback):
         self.ds = load_hellaswag_dataset()
 
     def on_evaluate(self, args, state, control, **kwargs):
+        print("Model device:", kwargs.get('model').device)
         if state.global_step != state.max_steps:
             return
 
