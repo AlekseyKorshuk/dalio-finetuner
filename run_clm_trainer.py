@@ -583,18 +583,18 @@ def main():
             checkpoint = last_checkpoint
         train_result = trainer.train(resume_from_checkpoint=checkpoint)
 
-        model = trainer.model
-        del trainer
-        gc.collect()
-        torch.cuda.empty_cache()
-        print("Training done")
-        time.sleep(10)
-        print("Saving model")
-        os.makedirs("./test", exist_ok=True)
-        model.save_pretrained("./test")
-        print("Saved model")
+        # model = trainer.model
+        # del trainer
+        # gc.collect()
+        # torch.cuda.empty_cache()
+        # print("Training done")
+        # time.sleep(10)
+        # print("Saving model")
+        # os.makedirs("./test", exist_ok=True)
+        # model.save_pretrained("./test")
+        # print("Saved model")
 
-        # trainer.save_model()  # Saves the tokenizer too for easy upload
+        trainer.save_model()  # Saves the tokenizer too for easy upload
 
         metrics = train_result.metrics
 
