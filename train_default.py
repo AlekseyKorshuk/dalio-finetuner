@@ -1,25 +1,39 @@
-import gc
+#!/usr/bin/env python
+# coding=utf-8
+# Copyright 2020 The HuggingFace Inc. team. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""
+Fine-tuning the library models for causal language modeling (GPT, GPT-2, CTRL, ...) on a text file or a dataset.
+
+Here is the full list of checkpoints on the hub that can be fine-tuned by this script:
+https://huggingface.co/models?filter=text-generation
+"""
+# You can also adapt this script on your own causal language modeling task. Pointers for this are left as comments.
+
 import logging
 import math
 import os
 import sys
-import time
-from copy import deepcopy
 from dataclasses import dataclass, field
 from itertools import chain
 from typing import Optional
 
 import datasets
-import torch
-import tqdm
 from datasets import load_dataset
-from transformers.modeling_utils import unwrap_model
-from transformers.trainer import TRAINING_ARGS_NAME
-from wandb import Table
 
 import evaluate
 import transformers
-from pandas import DataFrame
 from transformers import (
     CONFIG_MAPPING,
     MODEL_FOR_CAUSAL_LM_MAPPING,
@@ -31,18 +45,15 @@ from transformers import (
     TrainingArguments,
     default_data_collator,
     is_torch_tpu_available,
-    set_seed, PreTrainedModel,
+    set_seed,
 )
 from transformers.testing_utils import CaptureLogger
 from transformers.trainer_utils import get_last_checkpoint
-from transformers.utils import check_min_version, send_example_telemetry, WEIGHTS_NAME
+from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
-import hellaswag
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
-import prompts
-
-check_min_version("4.24.0")
+check_min_version("4.25.0.dev0")
 
 require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/language-modeling/requirements.txt")
 
@@ -189,64 +200,18 @@ class DataTrainingArguments:
                 assert extension in ["csv", "json", "txt"], "`validation_file` should be a csv, a json or a txt file."
 
 
-@dataclass
-class CustomArguments:
-    casual_loss: bool = field(
-        default=False, metadata={"help": "Whenever to calculate the loss on the full text."}
-    )
-
-
-class CustomTrainer(Trainer):
-    def _save(self, output_dir: Optional[str] = None, state_dict=None):
-        # If we are executing this function, we are the process zero, so we don't check for that.
-        output_dir = output_dir if output_dir is not None else self.args.output_dir
-        os.makedirs(output_dir, exist_ok=True)
-        logger.info(f"Saving model checkpoint to {output_dir}")
-        # Save a trained model and configuration using `save_pretrained()`.
-        # They can then be reloaded using `from_pretrained()`
-        if not isinstance(self.model, PreTrainedModel):
-            print("Saving model outside of PreTrainedModel")
-            if isinstance(unwrap_model(self.model), PreTrainedModel):
-                if state_dict is None:
-                    state_dict = self.model.state_dict()
-                print("Unwrapping model")
-                unwrap_model(self.model).save_pretrained(output_dir, state_dict=state_dict)
-            else:
-                logger.info("Trainer.model is not a `PreTrainedModel`, only saving its state dict.")
-                if state_dict is None:
-                    state_dict = self.model.state_dict()
-                torch.save(state_dict, os.path.join(output_dir, WEIGHTS_NAME))
-        else:
-            print("Saving model inside of PreTrainedModel")
-            self.model.save_pretrained(output_dir, state_dict=state_dict)
-        if self.tokenizer is not None:
-            self.tokenizer.save_pretrained(output_dir)
-
-        # print("State dict:", state_dict, self.model.state_dict())
-
-        # os.makedirs("./unwraped", exist_ok=True)
-        # unwrap_model(self.model).save_pretrained("./unwraped", state_dict=self.model.state_dict())
-        #
-        # os.makedirs("./state_dict_only", exist_ok=True)
-        # torch.save(self.model.state_dict(), os.path.join("./state_dict_only", WEIGHTS_NAME))
-
-        # Good practice: save your training arguments together with the trained model
-        torch.save(self.args, os.path.join(output_dir, TRAINING_ARGS_NAME))
-
-
 def main():
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
 
-    parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments, CustomArguments))
+    parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
         # let's parse it to get our arguments.
-        model_args, data_args, training_args, custom_args = parser.parse_json_file(
-            json_file=os.path.abspath(sys.argv[1]))
+        model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
-        model_args, data_args, training_args, custom_args = parser.parse_args_into_dataclasses()
+        model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
     # Sending telemetry. Tracking the example usage helps us better allocate resources to maintain them. The
     # information sent is the one passed as arguments along with your Python/PyTorch versions.
@@ -395,8 +360,6 @@ def main():
         "use_fast": model_args.use_fast_tokenizer,
         "revision": model_args.model_revision,
         "use_auth_token": True if model_args.use_auth_token else None,
-        "padding_side": "left",
-        "truncation_side": "left",
     }
     if model_args.tokenizer_name:
         tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
@@ -422,7 +385,11 @@ def main():
         n_params = sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values())
         logger.info(f"Training new model from scratch - Total size={n_params / 2 ** 20:.2f}M params")
 
-    model.resize_token_embeddings(len(tokenizer))
+    # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
+    # on a small vocab and want a smaller embedding size, remove this test.
+    embedding_size = model.get_input_embeddings().weight.shape[0]
+    if len(tokenizer) > embedding_size:
+        model.resize_token_embeddings(len(tokenizer))
 
     # Preprocessing the datasets.
     # First we tokenize all the texts.
@@ -430,52 +397,21 @@ def main():
         column_names = raw_datasets["train"].column_names
     else:
         column_names = raw_datasets["validation"].column_names
+    text_column_name = "text" if "text" in column_names else column_names[0]
 
-    if data_args.block_size is None:
-        block_size = tokenizer.model_max_length
-        if block_size > 2048:
-            logger.warning(
-                f"The tokenizer picked seems to have a very large `model_max_length` ({tokenizer.model_max_length}). "
-                "Picking 1024 instead. You can change that default value by passing --block_size xxx."
-            )
-            block_size = 2048
-    else:
-        if data_args.block_size > tokenizer.model_max_length:
-            logger.warning(
-                f"The block_size passed ({data_args.block_size}) is larger than the maximum length for the model"
-                f"({tokenizer.model_max_length}). Using block_size={tokenizer.model_max_length}."
-            )
-        block_size = min(data_args.block_size, tokenizer.model_max_length)
-
-    if "text" in column_names or len(column_names) == 1:
-        text_column_name = "text"
-    else:
-        input_column_name = "input_text" if "input_text" in column_names else column_names[0]
-        output_column_name = "output_text" if "output_text" in column_names else column_names[1]
-
+    # since this will be pickled to avoid _LazyModule error in Hasher force logger loading before tokenize_function
     tok_logger = transformers.utils.logging.get_logger("transformers.tokenization_utils_base")
 
     def tokenize_function(examples):
-        if "text" in column_names:
-            with CaptureLogger(tok_logger) as cl:
-                inputs = tokenizer(examples[text_column_name])
-            # clm input could be much much longer than block_size
-            if "Token indices sequence length is longer than the" in cl.out:
-                tok_logger.warning(
-                    "^^^^^^^^^^^^^^^^ Please ignore the warning above - this long input will be chunked into smaller bits"
-                    " before being passed to the model."
-                )
-            return inputs
-        input_texts = examples[input_column_name]
-        output_texts = examples[output_column_name]
-        data = [input_ + output_ for input_, output_ in zip(input_texts, output_texts)]
-        inputs = tokenizer(data, padding="longest", max_length=block_size, truncation=True)
-        inputs["labels"] = deepcopy(inputs.input_ids)
-        output_lengths = [len(tokenizer(output_string).input_ids) for output_string in output_texts]
-        for i in range(len(inputs["labels"])):
-            for j in range(0, len(inputs["labels"][i]) - output_lengths[i]):
-                inputs["labels"][i][j] = -100
-        return inputs
+        with CaptureLogger(tok_logger) as cl:
+            output = tokenizer(examples[text_column_name])
+        # clm input could be much much longer than block_size
+        if "Token indices sequence length is longer than the" in cl.out:
+            tok_logger.warning(
+                "^^^^^^^^^^^^^^^^ Please ignore the warning above - this long input will be chunked into smaller bits"
+                " before being passed to the model."
+            )
+        return output
 
     with training_args.main_process_first(desc="dataset map tokenization"):
         tokenized_datasets = raw_datasets.map(
@@ -486,6 +422,22 @@ def main():
             load_from_cache_file=not data_args.overwrite_cache,
             desc="Running tokenizer on dataset",
         )
+
+    if data_args.block_size is None:
+        block_size = tokenizer.model_max_length
+        if block_size > 1024:
+            logger.warning(
+                f"The tokenizer picked seems to have a very large `model_max_length` ({tokenizer.model_max_length}). "
+                "Picking 1024 instead. You can change that default value by passing --block_size xxx."
+            )
+            block_size = 1024
+    else:
+        if data_args.block_size > tokenizer.model_max_length:
+            logger.warning(
+                f"The block_size passed ({data_args.block_size}) is larger than the maximum length for the model"
+                f"({tokenizer.model_max_length}). Using block_size={tokenizer.model_max_length}."
+            )
+        block_size = min(data_args.block_size, tokenizer.model_max_length)
 
     # Main data processing function that will concatenate all texts from our dataset and generate chunks of block_size.
     def group_texts(examples):
@@ -512,16 +464,13 @@ def main():
     # https://huggingface.co/docs/datasets/package_reference/main_classes.html#datasets.Dataset.map
 
     with training_args.main_process_first(desc="grouping texts together"):
-        if "text" in column_names:
-            lm_datasets = tokenized_datasets.map(
-                group_texts,
-                batched=True,
-                num_proc=data_args.preprocessing_num_workers,
-                load_from_cache_file=not data_args.overwrite_cache,
-                desc=f"Grouping texts in chunks of {block_size}",
-            )
-        else:
-            lm_datasets = tokenized_datasets
+        lm_datasets = tokenized_datasets.map(
+            group_texts,
+            batched=True,
+            num_proc=data_args.preprocessing_num_workers,
+            load_from_cache_file=not data_args.overwrite_cache,
+            desc=f"Grouping texts in chunks of {block_size}",
+        )
 
     if training_args.do_train:
         if "train" not in tokenized_datasets:
@@ -554,34 +503,10 @@ def main():
             # by preprocess_logits_for_metrics but we need to shift the labels
             labels = labels[:, 1:].reshape(-1)
             preds = preds[:, :-1].reshape(-1)
-            metrics = metric.compute(predictions=preds, references=labels)
-            return metrics
-
-    callback_args = {
-        'max_new_tokens': 64,
-        'eos_token_id': 50118,
-        'repetition_penalty': 1.1,
-        'temperature': 1.0,
-        # "penalty_alpha": 0.6,
-        # "top_k": 4
-    }
-    callbacks = []
-    # callback = hellaswag.HellaswagCallback(
-    #     tokenizer=tokenizer,
-    #     params=callback_args,
-    #     num_prompts=32
-    # )
-    # callbacks.append(callback)
-    # if "text" not in column_names:
-    #     callback = prompts.RecordExampleAnswersCallback(
-    #         dataset=raw_datasets["test"],
-    #         tokenizer=tokenizer,
-    #         params=callback_args,
-    #     )
-    #     callbacks.append(callback)
+            return metric.compute(predictions=preds, references=labels)
 
     # Initialize our Trainer
-    trainer = CustomTrainer(
+    trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=train_dataset if training_args.do_train else None,
@@ -593,16 +518,9 @@ def main():
         preprocess_logits_for_metrics=preprocess_logits_for_metrics
         if training_args.do_eval and not is_torch_tpu_available()
         else None,
-        callbacks=callbacks
     )
-    torch.set_autocast_cache_enabled(False)
 
-    # Deepspeed error:
-    # AssertionError: {'id': 1, 'status': 'INFLIGHT', 'numel': 0, 'ds_numel': 8396800, 'shape': (0,), 'ds_shape': (2050, 4096), 'requires_grad': True, 'grad_shape': None, 'persist':
-    # False, 'active_sub_modules': {363}}
-    # if training_args.do_eval:
-    #     model_evaluate(model, log_table=False)
-
+    # Training
     if training_args.do_train:
         checkpoint = None
         if training_args.resume_from_checkpoint is not None:
@@ -610,18 +528,6 @@ def main():
         elif last_checkpoint is not None:
             checkpoint = last_checkpoint
         train_result = trainer.train(resume_from_checkpoint=checkpoint)
-
-        # model = trainer.model
-        # del trainer
-        # gc.collect()
-        # torch.cuda.empty_cache()
-        # print("Training done")
-        # time.sleep(10)
-        # print("Saving model")
-        # os.makedirs("./test", exist_ok=True)
-        # model.save_pretrained("./test")
-        # print("Saved model")
-
         trainer.save_model()  # Saves the tokenizer too for easy upload
 
         metrics = train_result.metrics
@@ -634,10 +540,23 @@ def main():
         trainer.log_metrics("train", metrics)
         trainer.save_metrics("train", metrics)
         trainer.save_state()
-        # trainer.save_model("./checkpoint-final")
 
-    # if training_args.do_eval:
-    #     model_evaluate(trainer.model)
+    # Evaluation
+    if training_args.do_eval:
+        logger.info("*** Evaluate ***")
+
+        metrics = trainer.evaluate()
+
+        max_eval_samples = data_args.max_eval_samples if data_args.max_eval_samples is not None else len(eval_dataset)
+        metrics["eval_samples"] = min(max_eval_samples, len(eval_dataset))
+        try:
+            perplexity = math.exp(metrics["eval_loss"])
+        except OverflowError:
+            perplexity = float("inf")
+        metrics["perplexity"] = perplexity
+
+        trainer.log_metrics("eval", metrics)
+        trainer.save_metrics("eval", metrics)
 
     kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
     if data_args.dataset_name is not None:
@@ -648,13 +567,10 @@ def main():
         else:
             kwargs["dataset"] = data_args.dataset_name
 
-    # if training_args.push_to_hub:
-    # print("Pushing to hub")
-    # trainer.push_to_hub(**kwargs)
-    # else:
-    #     trainer.create_model_card(**kwargs)
-
-    # import pdb; pdb.set_trace()
+    if training_args.push_to_hub:
+        trainer.push_to_hub(**kwargs)
+    else:
+        trainer.create_model_card(**kwargs)
 
 
 def _mp_fn(index):

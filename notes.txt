@@ -104,9 +104,9 @@ deepspeed run_clm_trainer.py \
     --dataset_name AlekseyKorshuk/dalio-handwritten-io \
     --do_train \
     --do_eval \
-    --logging_strategy steps \
+    --logging_strategy epoch \
     --logging_steps 1 \
-    --evaluation_strategy steps \
+    --evaluation_strategy epoch \
     --eval_steps 1 \
     --logging_first_step \
     --report_to all \
@@ -120,14 +120,14 @@ deepspeed run_clm_trainer.py \
     --learning_rate 3e-5 \
     --lr_scheduler_type cosine
 
-&& deepspeed run_clm_trainer.py \
+deepspeed run_clm_trainer.py \
     --model_name_or_path facebook/opt-30b \
     --dataset_name AlekseyKorshuk/dalio-synthetic-io \
     --do_train \
     --do_eval \
-    --logging_strategy steps \
+    --logging_strategy epoch \
     --logging_steps 1 \
-    --evaluation_strategy steps \
+    --evaluation_strategy epoch \
     --eval_steps 1 \
     --logging_first_step \
     --report_to all \
@@ -139,16 +139,16 @@ deepspeed run_clm_trainer.py \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 1 \
     --learning_rate 3e-5 \
-    --load_best_model_at_end \
-    --lr_scheduler_type cosine \
-&& deepspeed run_clm_trainer.py \
+    --lr_scheduler_type cosine
+
+deepspeed run_clm_trainer.py \
     --model_name_or_path facebook/opt-30b \
     --dataset_name AlekseyKorshuk/dalio-all-io \
     --do_train \
     --do_eval \
-    --logging_strategy steps \
+    --logging_strategy epoch \
     --logging_steps 1 \
-    --evaluation_strategy steps \
+    --evaluation_strategy epoch \
     --eval_steps 1 \
     --logging_first_step \
     --report_to all \
@@ -160,16 +160,16 @@ deepspeed run_clm_trainer.py \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 1 \
     --learning_rate 3e-5 \
-    --load_best_model_at_end \
-    --lr_scheduler_type cosine \
-&& deepspeed run_clm_trainer.py \
+    --lr_scheduler_type cosine
+
+deepspeed run_clm_trainer.py \
     --model_name_or_path facebook/opt-30b \
     --dataset_name AlekseyKorshuk/dalio-all-io \
     --do_train \
     --do_eval \
-    --logging_strategy steps \
+    --logging_strategy epoch \
     --logging_steps 1 \
-    --evaluation_strategy steps \
+    --evaluation_strategy epoch \
     --eval_steps 1 \
     --logging_first_step \
     --report_to all \
@@ -181,7 +181,6 @@ deepspeed run_clm_trainer.py \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 1 \
     --learning_rate 3e-5 \
-    --load_best_model_at_end \
     --lr_scheduler_type cosine
 
 
