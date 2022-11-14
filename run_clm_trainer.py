@@ -648,11 +648,10 @@ def main():
         else:
             kwargs["dataset"] = data_args.dataset_name
 
-    # if training_args.push_to_hub:
-    # print("Pushing to hub")
-    # trainer.push_to_hub(**kwargs)
-    # else:
-    #     trainer.create_model_card(**kwargs)
+    if training_args.push_to_hub:
+        trainer.push_to_hub(**kwargs)
+    else:
+        trainer.create_model_card(**kwargs)
 
     # import pdb; pdb.set_trace()
 
