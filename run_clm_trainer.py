@@ -552,7 +552,7 @@ def main():
         trainer.log_metrics("train", metrics)
         trainer.save_metrics("train", metrics)
         trainer.save_state()
-        trainer.save_model(training_args.output_dir)
+        trainer.save_model("./checkpoint-final")
 
     # if training_args.do_eval:
     #     model_evaluate(trainer.model)
@@ -567,6 +567,7 @@ def main():
             kwargs["dataset"] = data_args.dataset_name
 
     if training_args.push_to_hub:
+        print("Pushing to hub")
         trainer.push_to_hub(**kwargs)
     else:
         trainer.create_model_card(**kwargs)
