@@ -552,6 +552,7 @@ def main():
         trainer.log_metrics("train", metrics)
         trainer.save_metrics("train", metrics)
         trainer.save_state()
+        trainer.save_model(training_args.output_dir)
 
     # if training_args.do_eval:
     #     model_evaluate(trainer.model)

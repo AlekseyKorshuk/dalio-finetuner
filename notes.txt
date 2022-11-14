@@ -183,3 +183,31 @@ deepspeed run_clm_trainer.py \
     --learning_rate 3e-5 \
     --load_best_model_at_end \
     --lr_scheduler_type cosine
+
+
+
+
+deepspeed run_clm_trainer.py \
+    --model_name_or_path facebook/opt-30b \
+    --dataset_name AlekseyKorshuk/dalio-all-io \
+    --do_train \
+    --do_eval \
+    --logging_strategy steps \
+    --logging_steps 1 \
+    --evaluation_strategy steps \
+    --eval_steps 1 \
+    --logging_first_step \
+    --report_to all \
+    --output_dir /models/30b-all-v1-paper-params \
+    --overwrite_output_dir \
+    --num_train_epochs 3 \
+    --fp16 \
+    --deepspeed ds_config.json \
+    --per_device_train_batch_size 1 \
+    --per_device_eval_batch_size 1 \
+    --learning_rate 5e-5 \
+    --load_best_model_at_end \
+    --lr_scheduler_type cosine \
+    --adam_beta1 0.9 \
+    --adam_beta2 0.95 \
+    --adam_epsilon 1e-8
