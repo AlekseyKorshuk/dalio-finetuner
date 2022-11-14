@@ -582,17 +582,7 @@ def main():
         elif last_checkpoint is not None:
             checkpoint = last_checkpoint
         train_result = trainer.train(resume_from_checkpoint=checkpoint)
-        trainer.save_model()  # Saves the tokenizer too for easy upload
 
-        metrics = train_result.metrics
-
-        max_train_samples = (
-            data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset)
-        )
-        metrics["train_samples"] = min(max_train_samples, len(train_dataset))
-
-        trainer.log_metrics("train", metrics)
-        trainer.save_metrics("train", metrics)
         model = trainer.model
         del trainer
         gc.collect()
@@ -603,7 +593,19 @@ def main():
         os.makedirs("./test", exist_ok=True)
         model.save_pretrained("./test")
         print("Saved model")
-        # trainer.save_state()
+
+        # trainer.save_model()  # Saves the tokenizer too for easy upload
+
+        metrics = train_result.metrics
+
+        max_train_samples = (
+            data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset)
+        )
+        metrics["train_samples"] = min(max_train_samples, len(train_dataset))
+
+        trainer.log_metrics("train", metrics)
+        trainer.save_metrics("train", metrics)
+        trainer.save_state()
         # trainer.save_model("./checkpoint-final")
 
     # if training_args.do_eval:
