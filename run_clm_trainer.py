@@ -220,7 +220,7 @@ class CustomTrainer(Trainer):
         if self.tokenizer is not None:
             self.tokenizer.save_pretrained(output_dir)
 
-        print("State dict:", state_dict)
+        print("State dict:", state_dict, self.model.state_dict())
         # Good practice: save your training arguments together with the trained model
         torch.save(self.args, os.path.join(output_dir, TRAINING_ARGS_NAME))
 
@@ -599,11 +599,11 @@ def main():
         else:
             kwargs["dataset"] = data_args.dataset_name
 
-    if training_args.push_to_hub:
-        print("Pushing to hub")
-        trainer.push_to_hub(**kwargs)
-    else:
-        trainer.create_model_card(**kwargs)
+    # if training_args.push_to_hub:
+    # print("Pushing to hub")
+    trainer.push_to_hub(**kwargs)
+    # else:
+    #     trainer.create_model_card(**kwargs)
 
     import pdb; pdb.set_trace()
 
