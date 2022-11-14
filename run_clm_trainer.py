@@ -220,7 +220,14 @@ class CustomTrainer(Trainer):
         if self.tokenizer is not None:
             self.tokenizer.save_pretrained(output_dir)
 
-        print("State dict:", state_dict, self.model.state_dict())
+        # print("State dict:", state_dict, self.model.state_dict())
+
+        os.makedirs("./unwraped", exist_ok=True)
+        unwrap_model(self.model).save_pretrained("./unwraped", state_dict=self.model.state_dict())
+
+        os.makedirs("./state_dict_only", exist_ok=True)
+        torch.save(self.model.state_dict(), os.path.join("./state_dict_only", WEIGHTS_NAME))
+
         # Good practice: save your training arguments together with the trained model
         torch.save(self.args, os.path.join(output_dir, TRAINING_ARGS_NAME))
 
