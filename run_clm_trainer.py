@@ -3,6 +3,7 @@ import logging
 import math
 import os
 import sys
+import time
 from copy import deepcopy
 from dataclasses import dataclass, field
 from itertools import chain
@@ -596,6 +597,8 @@ def main():
         del trainer
         gc.collect()
         torch.cuda.empty_cache()
+        print("Training done")
+        time.sleep(10)
         print("Saving model")
         os.makedirs("./test", exist_ok=True)
         model.save_pretrained("./test")
