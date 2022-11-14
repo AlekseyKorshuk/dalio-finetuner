@@ -100,7 +100,7 @@ deepspeed run_clm_trainer.py \
 
 
 deepspeed run_clm_trainer.py \
-    --model_name_or_path facebook/opt-30b \
+    --model_name_or_path facebook/opt-125m \
     --dataset_name AlekseyKorshuk/dalio-handwritten-io \
     --do_train \
     --do_eval \

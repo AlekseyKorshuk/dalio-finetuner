@@ -1,3 +1,4 @@
+import gc
 import logging
 import math
 import os
@@ -222,11 +223,11 @@ class CustomTrainer(Trainer):
 
         # print("State dict:", state_dict, self.model.state_dict())
 
-        os.makedirs("./unwraped", exist_ok=True)
-        unwrap_model(self.model).save_pretrained("./unwraped", state_dict=self.model.state_dict())
-
-        os.makedirs("./state_dict_only", exist_ok=True)
-        torch.save(self.model.state_dict(), os.path.join("./state_dict_only", WEIGHTS_NAME))
+        # os.makedirs("./unwraped", exist_ok=True)
+        # unwrap_model(self.model).save_pretrained("./unwraped", state_dict=self.model.state_dict())
+        #
+        # os.makedirs("./state_dict_only", exist_ok=True)
+        # torch.save(self.model.state_dict(), os.path.join("./state_dict_only", WEIGHTS_NAME))
 
         # Good practice: save your training arguments together with the trained model
         torch.save(self.args, os.path.join(output_dir, TRAINING_ARGS_NAME))
@@ -591,8 +592,14 @@ def main():
 
         trainer.log_metrics("train", metrics)
         trainer.save_metrics("train", metrics)
-        trainer.save_state()
-        trainer.save_model("./checkpoint-final")
+        model = trainer.model
+        del trainer
+        gc.collect()
+        torch.cuda.empty_cache()
+        os.makedirs("./test", exist_ok=True)
+        model.save_pretrained("./test")
+        # trainer.save_state()
+        # trainer.save_model("./checkpoint-final")
 
     # if training_args.do_eval:
     #     model_evaluate(trainer.model)
@@ -608,7 +615,7 @@ def main():
 
     # if training_args.push_to_hub:
     # print("Pushing to hub")
-    trainer.push_to_hub(**kwargs)
+    # trainer.push_to_hub(**kwargs)
     # else:
     #     trainer.create_model_card(**kwargs)
 
