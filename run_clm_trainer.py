@@ -596,8 +596,10 @@ def main():
         del trainer
         gc.collect()
         torch.cuda.empty_cache()
+        print("Saving model")
         os.makedirs("./test", exist_ok=True)
         model.save_pretrained("./test")
+        print("Saved model")
         # trainer.save_state()
         # trainer.save_model("./checkpoint-final")
 
