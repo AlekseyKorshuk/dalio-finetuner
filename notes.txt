@@ -118,10 +118,7 @@ deepspeed run_clm_trainer.py \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 1 \
     --learning_rate 3e-5 \
-    --lr_scheduler_type cosine \
-    --max_steps 1 \
-    --push_to_hub \
-    --hub_model_id AlekseyKorshuk/dalio-large-test
+    --lr_scheduler_type cosine
 
 && deepspeed run_clm_trainer.py \
     --model_name_or_path facebook/opt-30b \
