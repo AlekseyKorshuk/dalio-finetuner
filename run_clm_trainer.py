@@ -461,7 +461,8 @@ def main():
     def tokenize_function(examples):
         if "text" in column_names:
             with CaptureLogger(tok_logger) as cl:
-                inputs = tokenizer(examples[text_column_name], padding="longest", max_length=block_size, truncation=True)
+                inputs = tokenizer(examples[text_column_name], padding="longest", max_length=block_size,
+                                   truncation=True)
                 inputs["labels"] = deepcopy(inputs.input_ids)
             # clm input could be much much longer than block_size
             if "Token indices sequence length is longer than the" in cl.out:
@@ -572,19 +573,20 @@ def main():
         # "top_k": 4
     }
     callbacks = []
-    # callback = hellaswag.HellaswagCallback(
-    #     tokenizer=tokenizer,
-    #     params=callback_args,
-    #     num_prompts=32
-    # )
-    # callbacks.append(callback)
-    # if "text" not in column_names:
-    #     callback = prompts.RecordExampleAnswersCallback(
-    #         dataset=raw_datasets["test"],
-    #         tokenizer=tokenizer,
-    #         params=callback_args,
-    #     )
-    #     callbacks.append(callback)
+    callback = hellaswag.HellaswagCallback(
+        tokenizer=tokenizer,
+        params=callback_args,
+        num_prompts=32
+    )
+    callbacks.append(callback)
+
+    table_dataset = load_dataset("AlekseyKorshuk/dalio-handwritten-io")
+    callback = prompts.RecordExampleAnswersCallback(
+        dataset=table_dataset["test"],
+        tokenizer=tokenizer,
+        params=callback_args,
+    )
+    callbacks.append(callback)
 
     # Initialize our Trainer
     trainer = CustomTrainer(
