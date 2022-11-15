@@ -526,6 +526,8 @@ def main():
         else:
             lm_datasets = tokenized_datasets
 
+    logger.info(f"Sample of dataset: {lm_datasets['train'][0]}")
+
     if training_args.do_train:
         if "train" not in tokenized_datasets:
             raise ValueError("--do_train requires a train dataset")
