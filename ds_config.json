@@ -25,7 +25,10 @@
     "offload_param": {
       "device": "nvme",
       "pin_memory": false,
-      "nvme_path": "auto"
+      "nvme_path": "auto",
+      "buffer_count": "auto",
+      "buffer_size": "auto",
+      "max_in_cpu": "auto"
     },
     "overlap_comm": true,
     "contiguous_gradients": true,
