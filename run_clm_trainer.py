@@ -515,7 +515,7 @@ def main():
     # https://huggingface.co/docs/datasets/package_reference/main_classes.html#datasets.Dataset.map
 
     with training_args.main_process_first(desc="grouping texts together"):
-        if "text" in column_names:
+        if "text" in column_names and False:
             lm_datasets = tokenized_datasets.map(
                 group_texts,
                 batched=True,
