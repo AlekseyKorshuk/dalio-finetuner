@@ -397,6 +397,7 @@ def main():
         "use_auth_token": True if model_args.use_auth_token else None,
         "padding_side": "left",
         "truncation_side": "left",
+        "pad_token_id": -100,
     }
     if model_args.tokenizer_name:
         tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
