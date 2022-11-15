@@ -232,13 +232,9 @@ deepspeed run_clm_trainer.py \
     --deepspeed ds_config.json \
     --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 1 \
-    --learning_rate 7e-5 \
+    --learning_rate 5e-5 \
     --lr_scheduler_type linear \
-    --adam_beta1 0.9 \
-    --adam_beta2 0.95 \
-    --adam_epsilon 1e-8 \
-    --weight_decay 0.01 \
-    --block_size 1024 \
+    --block_size 2048 \
     --overwrite_cache
 
 deepspeed run_clm_trainer.py \
