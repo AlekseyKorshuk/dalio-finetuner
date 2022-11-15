@@ -461,7 +461,7 @@ def main():
         if "text" in column_names:
             with CaptureLogger(tok_logger) as cl:
                 inputs = tokenizer(examples[text_column_name], padding="longest", max_length=block_size, truncation=True)
-                inputs["labels"] = deepcopy(inputs.input_ids)
+                # inputs["labels"] = deepcopy(inputs.input_ids)
             # clm input could be much much longer than block_size
             if "Token indices sequence length is longer than the" in cl.out:
                 tok_logger.warning(
@@ -515,7 +515,7 @@ def main():
     # https://huggingface.co/docs/datasets/package_reference/main_classes.html#datasets.Dataset.map
 
     with training_args.main_process_first(desc="grouping texts together"):
-        if "text" in column_names and False:
+        if "text" in column_names:
             lm_datasets = tokenized_datasets.map(
                 group_texts,
                 batched=True,
