@@ -571,12 +571,12 @@ def main():
         # "top_k": 4
     }
     callbacks = []
-    # callback = hellaswag.HellaswagCallback(
-    #     tokenizer=tokenizer,
-    #     params=callback_args,
-    #     num_prompts=32
-    # )
-    # callbacks.append(callback)
+    callback = hellaswag.HellaswagCallback(
+        tokenizer=tokenizer,
+        params=callback_args,
+        num_prompts=32
+    )
+    callbacks.append(callback)
     # if "text" not in column_names:
     #     callback = prompts.RecordExampleAnswersCallback(
     #         dataset=raw_datasets["test"],

@@ -220,9 +220,9 @@ deepspeed run_clm_trainer.py \
     --do_train \
     --do_eval \
     --logging_strategy steps \
-    --logging_steps 1 \
+    --logging_steps 4 \
     --evaluation_strategy steps \
-    --eval_steps 1 \
+    --eval_steps 4 \
     --logging_first_step \
     --report_to all \
     --output_dir /models/30b-dalio-principles-book \
@@ -231,7 +231,7 @@ deepspeed run_clm_trainer.py \
     --fp16 \
     --deepspeed ds_config.json \
     --per_device_train_batch_size 1 \
-    --per_device_eval_batch_size 1 \
+    --per_device_eval_batch_size 2 \
     --learning_rate 5e-5 \
     --lr_scheduler_type linear \
     --block_size 2048 \
