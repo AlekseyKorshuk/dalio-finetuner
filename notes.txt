@@ -237,8 +237,8 @@ deepspeed run_clm_trainer.py \
     --adam_beta1 0.9 \
     --adam_beta2 0.95 \
     --adam_epsilon 1e-8 \
-    --weight_decay 0.01
-
+    --weight_decay 0.01 \
+    --block_size 1024
 
 deepspeed run_clm_trainer.py \
     --model_name_or_path /models/1.3b-dalio-principles-book \

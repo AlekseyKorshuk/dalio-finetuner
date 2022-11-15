@@ -447,6 +447,8 @@ def main():
             )
         block_size = min(data_args.block_size, tokenizer.model_max_length)
 
+    logger.info(f"block_size: {block_size}")
+
     if "text" in column_names or len(column_names) == 1:
         text_column_name = "text"
     else:
