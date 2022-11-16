@@ -24,8 +24,8 @@ class RecordExampleAnswersCallback(TrainerCallback):
         self.params = params
 
     def on_evaluate(self, args, state, control, **kwargs):
-        # if state.global_step != state.max_steps:
-        #     return
+        if state.global_step != state.max_steps:
+            return
         model = kwargs.get('model')
 
         with torch.no_grad():

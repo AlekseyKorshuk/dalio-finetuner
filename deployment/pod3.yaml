@@ -20,13 +20,13 @@ spec:
       args: [ "infinity" ]
       resources:
         limits:
-          cpu: "94"
-          nvidia.com/gpu: "8"
-          memory: 716Gi
+          cpu: "40"
+          nvidia.com/gpu: "2"
+          memory: 500Gi
         requests:
-          cpu: "94"
-          nvidia.com/gpu: "8"
-          memory: 716Gi
+          cpu: "40"
+          nvidia.com/gpu: "2"
+          memory: 500Gi
       volumeMounts:
         - name: ak-finetunes
           mountPath: /models
@@ -49,11 +49,11 @@ spec:
               - key: gpu.nvidia.com/class
                 operator: In
                 values:
-                  - A40
+                  - A100_PCIE_80GB
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
               - key: gpu.nvidia.com/class
                 operator: In
                 values:
-                  - A40
+                  - A100_PCIE_80GB
