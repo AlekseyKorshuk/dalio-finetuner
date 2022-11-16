@@ -580,13 +580,13 @@ def main():
     )
     callbacks.append(callback)
 
-    table_dataset = load_dataset("AlekseyKorshuk/dalio-handwritten-io")
-    callback = prompts.RecordExampleAnswersCallback(
-        dataset=table_dataset["test"],
-        tokenizer=tokenizer,
-        params=callback_args,
-    )
-    callbacks.append(callback)
+    # table_dataset = load_dataset("AlekseyKorshuk/dalio-handwritten-io")
+    # callback = prompts.RecordExampleAnswersCallback(
+    #     dataset=table_dataset["test"],
+    #     tokenizer=tokenizer,
+    #     params=callback_args,
+    # )
+    # callbacks.append(callback)
 
     # Initialize our Trainer
     trainer = CustomTrainer(
