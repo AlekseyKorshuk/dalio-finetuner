@@ -408,7 +408,7 @@ def main():
             "You are instantiating a new tokenizer from scratch. This is not supported by this script."
             "You can do it from another script, save it, and load it from here, using --tokenizer_name."
         )
-    tokenizer.pad_token_id = -100
+    # tokenizer.pad_token_id = -100
 
     if model_args.model_name_or_path:
         model = AutoModelForCausalLM.from_pretrained(
@@ -462,8 +462,9 @@ def main():
     def tokenize_function(examples):
         if "text" in column_names:
             with CaptureLogger(tok_logger) as cl:
-                inputs = tokenizer(examples[text_column_name], padding="longest", max_length=block_size,
-                                   truncation=True)
+                # inputs = tokenizer(examples[text_column_name], padding="longest", max_length=block_size,
+                #                    truncation=True)
+                inputs = tokenizer(examples[text_column_name])
                 inputs["labels"] = deepcopy(inputs.input_ids)
             # clm input could be much much longer than block_size
             if "Token indices sequence length is longer than the" in cl.out:
@@ -518,7 +519,7 @@ def main():
     # https://huggingface.co/docs/datasets/package_reference/main_classes.html#datasets.Dataset.map
 
     with training_args.main_process_first(desc="grouping texts together"):
-        if "text" in column_names and False:
+        if "text" in column_names:
             lm_datasets = tokenized_datasets.map(
                 group_texts,
                 batched=True,
