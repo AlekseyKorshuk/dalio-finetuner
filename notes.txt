@@ -386,7 +386,7 @@ deepspeed --num_gpus=2 run_clm_trainer.py \
 
 
 deepspeed run_clm_trainer.py \
-    --model_name_or_path EleutherAI/gpt-j-6B \
+    --model_name_or_path facebook/opt-125m \
     --dataset_name Jellywibble/dalio-finetune-principles_book \
     --do_train \
     --do_eval \
@@ -396,7 +396,7 @@ deepspeed run_clm_trainer.py \
     --eval_steps 1 \
     --logging_first_step \
     --report_to all \
-    --output_dir /models/gpt-j-dalio-principles-book-1-epoch \
+    --output_dir /models/test_model \
     --overwrite_output_dir \
     --num_train_epochs 1 \
     --fp16 \
@@ -406,4 +406,5 @@ deepspeed run_clm_trainer.py \
     --learning_rate 5e-5 \
     --lr_scheduler_type linear \
     --block_size 2048 \
-    --overwrite_cache
+    --overwrite_cache \
+    --gradient_accumulation_steps 3
