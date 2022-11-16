@@ -466,6 +466,10 @@ def main():
                                    truncation=True, pad_token_id=-100)
                 # inputs = tokenizer(examples[text_column_name])
                 inputs["labels"] = deepcopy(inputs.input_ids)
+                for i in range(len(inputs["labels"])):
+                    for j in range(len(inputs["labels"][i])):
+                        if inputs["labels"][i][j] == tokenizer.pad_token_id:
+                            inputs["labels"][i][j] = -100
             # clm input could be much much longer than block_size
             if "Token indices sequence length is longer than the" in cl.out:
                 tok_logger.warning(
