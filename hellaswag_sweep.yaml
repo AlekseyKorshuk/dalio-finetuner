@@ -24,9 +24,9 @@ parameters:
   evaluation_strategy:
     value: steps
   eval_steps:
-    value: 1
+    value: 4
   logging_first_step:
-    value: 1
+    value: 4
   report_to:
     value: all
   output_dir:
