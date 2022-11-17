@@ -20,13 +20,13 @@ parameters:
   logging_strategy:
     value: steps
   logging_steps:
-    value: 1
+    value: 4
   evaluation_strategy:
     value: steps
   eval_steps:
     value: 4
   logging_first_step:
-    value: 4
+    value: 1
   report_to:
     value: all
   output_dir:

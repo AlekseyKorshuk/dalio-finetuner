@@ -408,3 +408,6 @@ deepspeed run_clm_trainer.py \
     --block_size 2048 \
     --overwrite_cache \
     --gradient_accumulation_steps 1
+
+
+wandb agent aleksey-korshuk/dalio-finetuner/zt55way2
