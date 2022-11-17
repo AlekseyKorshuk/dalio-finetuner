@@ -1,0 +1,49 @@
+command:
+  - "deepspeed"
+  - "run_clm_trainer.py"
+  - ${args}
+method: grid
+metric:
+  name: hellaswag/perplexity
+  goal: minimize
+parameters:
+  learning_rate:
+    values: [ 0.00001, 0.000009, 0.000008, 0.000007, 0.000006, 0.000005, 0.000004, 0.000003, 0.000002, 0.000001 ]
+  model_name_or_path:
+    value: facebook/opt-1.3b
+  dataset_name:
+    value: Jellywibble/dalio-finetune-principles_book
+  do_train:
+    value: 1
+  do_eval:
+    value: 1
+  logging_strategy:
+    value: steps
+  logging_steps:
+    value: 1
+  evaluation_strategy:
+    value: steps
+  eval_steps:
+    value: 1
+  logging_first_step:
+    value: 1
+  report_to:
+    value: all
+  output_dir:
+    value: /tmp/test-clm
+  overwrite_output_dir:
+    value: 1
+  num_train_epochs:
+    value: 1
+  fp16:
+    value: 1
+  deepspeed:
+    value: ds_config.json
+  per_device_train_batch_size:
+    value: 1
+  per_device_eval_batch_size:
+    value: 1
+  lr_scheduler_type:
+    values: [ cosine, linear, constant ]
+  warmup_steps:
+    value: 0
