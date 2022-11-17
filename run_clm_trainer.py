@@ -463,7 +463,7 @@ def main():
         if "text" in column_names:
             with CaptureLogger(tok_logger) as cl:
                 inputs = tokenizer(examples[text_column_name], padding="longest", max_length=block_size,
-                                   truncation=True, pad_token_id=-100)
+                                   truncation=True)
                 # inputs = tokenizer(examples[text_column_name])
                 inputs["labels"] = deepcopy(inputs.input_ids)
                 for i in range(len(inputs["labels"])):
