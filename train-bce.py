@@ -19,7 +19,40 @@ from sklearn.metrics import (
     r2_score,
 )
 
-from utils import ValidationCallback
+import wandb
+import torch
+import numpy as np
+import pandas as pd
+
+from transformers import Trainer, TrainerCallback
+
+
+class ValidationCallback(TrainerCallback):
+    def __init__(self, eval_dataset):
+        self.eval_dataset = eval_dataset
+        self.batch_size = 64
+
+    def on_evaluate(self, args, state, control, **kwargs):
+        model = kwargs.get("model")
+
+        eval_batch = self.eval_dataset.select(range(self.batch_size))
+        preds = self._get_predictions(model, eval_batch)
+        self._save_results(eval_batch, preds)
+
+    def _save_results(self, batch, preds):
+        wandb.log({"eval_table": self._get_eval_table(batch, preds)})
+
+    def _get_eval_table(self, batch, preds):
+        df_results = pd.DataFrame(
+            {"text": batch["text"], "labels": batch["labels"], "preds": preds}
+        )
+        return wandb.Table(dataframe=df_results)
+
+    def _get_predictions(self, model, values):
+        trainer = Trainer(model=model)
+        preds = trainer.predict(values).predictions
+        return preds.squeeze()
+
 
 AUTH_TOKEN = "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"
 WANDB_KEY = "95713a8419108e9246736f20a564e81559a8e80f"
