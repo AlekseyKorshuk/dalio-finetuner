@@ -551,9 +551,9 @@ deepspeed run_clm_trainer.py \
     --do_train \
     --do_eval \
     --logging_strategy steps \
-    --logging_steps 4 \
+    --logging_steps 1 \
     --evaluation_strategy steps \
-    --eval_steps 4 \
+    --eval_steps 1 \
     --logging_first_step \
     --report_to all \
     --output_dir /models/6.7b-dalio-principles-book-1-epoch-1-gas-6e-6-lr \

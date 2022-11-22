@@ -582,7 +582,7 @@ def main():
     callback = hellaswag.HellaswagCallback(
         tokenizer=tokenizer,
         params=callback_args,
-        num_prompts=32
+        num_prompts=100
     )
     callbacks.append(callback)
 
