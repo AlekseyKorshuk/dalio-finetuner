@@ -55,10 +55,11 @@ def score_hellaswag(dataset, model, tokenizer, num_prompts, params):
             input_text = row["ctx_a"]
             output_text = ending
             inputs = tokenizer(input_text + output_text, return_tensors="pt").to(model.device)
+            output_len = len(tokenizer(output_text, return_tensors="pt").input_ids[0])
             input_ids = inputs.input_ids[0][1:]
             output = model(**inputs)
-            output_probs = output.logits.softmax(-1)[0]
-            for probs, input_id in zip(output_probs, input_ids):
+            output_probs = output.logits.softmax(-1)[0][:-1]
+            for probs, input_id in zip(output_probs[-output_len:], input_ids[-output_len:]):
                 prob = probs[input_id]
                 likelihood = math.log(prob) if prob > 0 else -np.inf
                 likelihoods.append(likelihood)
