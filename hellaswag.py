@@ -1,7 +1,7 @@
 import logging
 import math
 from datasets import load_dataset
-from tqdm import tqdm
+import tqdm
 from transformers import TrainerCallback
 import numpy as np
 import torch
