@@ -37,7 +37,7 @@ print(dataset)
 
 # dataset.push_to_hub("AlekseyKorshuk/dalio-book-handwritten-io")
 
-block_size = 1024
+block_size = 2048
 from copy import deepcopy
 
 input_column_name = "input_text"
