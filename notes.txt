@@ -547,26 +547,26 @@ deepspeed run_clm_trainer.py \
 
 deepspeed run_clm_trainer.py \
     --model_name_or_path facebook/opt-6.7b \
-    --dataset_name Jellywibble/dalio-finetune-principles_book \
+    --dataset_name AlekseyKorshuk/dalio-book-handwritten-io-sorted \
     --do_train \
     --do_eval \
     --logging_strategy steps \
-    --logging_steps 1 \
+    --logging_steps 4 \
     --evaluation_strategy steps \
-    --eval_steps 1 \
+    --eval_steps 4 \
     --logging_first_step \
     --report_to all \
-    --output_dir /models/6.7b-dalio-principles-book-1-epoch-1-gas-1e-5-lr \
+    --output_dir /models/6.7b-dalio-book-handwritten-io-cosine-3e-5 \
     --overwrite_output_dir \
     --num_train_epochs 1 \
     --fp16 \
     --deepspeed ds_config.json \
-    --per_device_train_batch_size 4 \
-    --per_device_eval_batch_size 4 \
-    --learning_rate 1e-5 \
-    --lr_scheduler_type constant \
+    --per_device_train_batch_size 1 \
+    --per_device_eval_batch_size 1 \
+    --learning_rate 3e-5 \
+    --lr_scheduler_type cosine \
     --block_size 2048 \
     --overwrite_cache \
     --push_to_hub \
-    --push_to_hub_model_id 6.7b-dalio-principles-book-1-epoch-1-gas-1e-5-lr
+    --push_to_hub_model_id AlekseyKorshuk/6.7b-dalio-book-handwritten-io-cosine-3e-5
 
