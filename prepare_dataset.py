@@ -3,7 +3,7 @@ from datasets import load_dataset, concatenate_datasets, Dataset, DatasetDict
 import torch
 
 tokenizer = AutoTokenizer.from_pretrained("facebook/opt-6.7b")
-model = AutoModelForCausalLM.from_pretrained("facebook/opt-125m").to(0)
+model = AutoModelForCausalLM.from_pretrained("facebook/opt-125m", device_map="auto")
 
 dataset1 = load_dataset("AlekseyKorshuk/dalio-handwritten-io")
 dataset2 = load_dataset("Jellywibble/dalio-finetune-principles_book")
