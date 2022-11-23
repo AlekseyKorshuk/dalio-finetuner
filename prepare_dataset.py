@@ -101,6 +101,8 @@ print(pd.Series(losses).describe())
 
 dataset["train"] = dataset["train"].add_column("loss", losses).sort('loss')
 
+print(dataset["train"][:3])
+
 dataset["train"] = dataset["train"].remove_columns(["loss"])
 
 dataset.push_to_hub("AlekseyKorshuk/dalio-book-handwritten-io-sorted")
