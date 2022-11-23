@@ -85,20 +85,22 @@ for data in tqdm.tqdm(tokenized_datasets["train"]):
     for key in data.keys():
         data[key] = torch.tensor(data[key]).unsqueeze(0).to(model.device)
     # print(data)
+    print(data)
+    input("Press Enter to continue...")
     with torch.no_grad():
         output = model(**data)
     # print(output.loss)
     losses.append(float(output.loss))
 
-import numpy as np
-
-print(np.mean(losses))
-import pandas as pd
-
-print(pd.Series(losses).describe())
-
-dataset["train"] = dataset["train"].add_column("loss", losses).sort('loss')
-
-dataset["train"] = dataset["train"].remove_columns(["loss"])
-
-dataset.push_to_hub("AlekseyKorshuk/dalio-book-handwritten-io-sorted")
+# import numpy as np
+#
+# print(np.mean(losses))
+# import pandas as pd
+#
+# print(pd.Series(losses).describe())
+#
+# dataset["train"] = dataset["train"].add_column("loss", losses).sort('loss')
+#
+# dataset["train"] = dataset["train"].remove_columns(["loss"])
+#
+# dataset.push_to_hub("AlekseyKorshuk/dalio-book-handwritten-io-sorted")
