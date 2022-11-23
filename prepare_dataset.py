@@ -83,7 +83,7 @@ losses = []
 
 for data in tqdm.tqdm(tokenized_datasets["train"]):
     for key in data.keys():
-        data[key] = torch.tensor(data[key]).unsqueeze(0)
+        data[key] = torch.tensor(data[key]).unsqueeze(0).to(model.device)
     # print(data)
     output = model(**data)
     # print(output.loss)
