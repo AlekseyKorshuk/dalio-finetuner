@@ -3,7 +3,7 @@ from datasets import load_dataset, concatenate_datasets, Dataset, DatasetDict
 import torch
 
 tokenizer = AutoTokenizer.from_pretrained("facebook/opt-6.7b")
-model = AutoModelForCausalLM.from_pretrained("facebook/opt-125m", device_map="auto")
+model = AutoModelForCausalLM.from_pretrained("facebook/opt-6.7b", device_map="auto")
 
 dataset1 = load_dataset("AlekseyKorshuk/dalio-handwritten-io")
 dataset2 = load_dataset("Jellywibble/dalio-finetune-principles_book")
@@ -90,6 +90,8 @@ for data in tqdm.tqdm(tokenized_datasets["train"]):
     # print(output.loss)
     losses.append(float(output.loss))
 
-dataset["train"] = dataset["train"].add_column("loss", losses)
+dataset["train"] = dataset["train"].add_column("loss", losses).sort('loss')
 
-print(dataset)
+dataset["train"] = dataset["train"].remove_columns(["loss"])
+
+dataset.push_to_hub("AlekseyKorshuk/dalio-book-handwritten-io-sorted")
