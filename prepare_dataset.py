@@ -25,9 +25,12 @@ dataset2_io = DatasetDict(
     }
 )
 
-dataset = concatenate_datasets([dataset1, dataset2_io])
+dataset = DatasetDict(
+    {
+        "train": concatenate_datasets([dataset1["train"], dataset2_io["train"]]),
+        "validation": concatenate_datasets([dataset1["validation"], dataset2_io["validation"]]),
+        "test": dataset1["test"],
+    }
+)
 
 dataset.push_to_hub("AlekseyKorshuk/dalio-book-handwritten-io")
-
-
-
