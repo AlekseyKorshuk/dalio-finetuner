@@ -90,6 +90,13 @@ for data in tqdm.tqdm(tokenized_datasets["train"]):
     # print(output.loss)
     losses.append(float(output.loss))
 
+import numpy as np
+
+print(np.mean(losses))
+import pandas as pd
+
+print(pd.Series(losses).describe())
+
 dataset["train"] = dataset["train"].add_column("loss", losses).sort('loss')
 
 dataset["train"] = dataset["train"].remove_columns(["loss"])
