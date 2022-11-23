@@ -88,7 +88,7 @@ for data in tqdm.tqdm(tokenized_datasets["train"]):
     with torch.no_grad():
         output = model(**data)
     # print(output.loss)
-    losses.append(output.loss)
+    losses.append(float(output.loss))
 
 dataset["train"] = dataset["train"].add_column("loss", losses)
 
