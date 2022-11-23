@@ -67,7 +67,7 @@ def tokenize_function(examples):
     return inputs
 
 
-tokenized_datasets = dataset.map(
+tokenized_datasets = dataset2_io.map(
     tokenize_function,
     batched=True,
     num_proc=4,
