@@ -67,7 +67,7 @@ def tokenize_function(examples):
     return inputs
 
 
-tokenized_datasets = dataset2_io.map(
+tokenized_datasets = dataset.map(
     tokenize_function,
     batched=True,
     num_proc=4,
@@ -85,8 +85,8 @@ for data in tqdm.tqdm(tokenized_datasets["train"]):
     for key in data.keys():
         data[key] = torch.tensor(data[key]).unsqueeze(0).to(model.device)
     # print(data)
-    print(data)
-    input("Press Enter to continue...")
+    # print(data)
+    # input("Press Enter to continue...")
     with torch.no_grad():
         output = model(**data)
     # print(output.loss)
