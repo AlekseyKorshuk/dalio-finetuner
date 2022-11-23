@@ -33,4 +33,5 @@ dataset = DatasetDict(
     }
 )
 
+print(dataset)
 dataset.push_to_hub("AlekseyKorshuk/dalio-book-handwritten-io")
