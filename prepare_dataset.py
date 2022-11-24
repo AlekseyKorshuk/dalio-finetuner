@@ -5,6 +5,8 @@ import torch
 tokenizer = AutoTokenizer.from_pretrained("facebook/opt-6.7b", padding_side="left", pad_token_id=0)
 model = AutoModelForCausalLM.from_pretrained("facebook/opt-6.7b", device_map="auto")
 
+test_split = load_dataset("AlekseyKorshuk/dalio-handwritten-io", split="test")
+
 ds_name = "ChaiML/dalio_combined_v1"
 dataset1 = load_dataset(ds_name)
 
@@ -52,7 +54,7 @@ dataset = DatasetDict(
     {
         "train": concatenate_datasets([dataset1["train"], dataset2_io["train"]]),
         "validation": concatenate_datasets([dataset1["validation"], dataset2_io["validation"]]),
-        "test": dataset1["test"],
+        "test": test_split,
     }
 )
 
