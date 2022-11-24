@@ -5,7 +5,7 @@ import torch
 tokenizer = AutoTokenizer.from_pretrained("facebook/opt-6.7b", padding_side="left", pad_token_id=0)
 model = AutoModelForCausalLM.from_pretrained("facebook/opt-6.7b", device_map="auto")
 
-dataset1 = load_dataset("AlekseyKorshuk/dalio-handwritten-io")
+dataset1 = load_dataset("ChaiML/dalio_combined_v1")
 dataset2 = load_dataset("Jellywibble/dalio-finetune-principles_book")
 
 dataset2_io = DatasetDict(
@@ -105,4 +105,4 @@ print(dataset["train"][:3])
 
 dataset["train"] = dataset["train"].remove_columns(["loss"])
 
-dataset.push_to_hub("AlekseyKorshuk/dalio-book-handwritten-io-sorted")
+dataset.push_to_hub("AlekseyKorshuk/dalio-book-handwritten-io-sorted-v2")
