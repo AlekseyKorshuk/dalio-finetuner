@@ -547,7 +547,7 @@ deepspeed run_clm_trainer.py \
 
 deepspeed run_clm_trainer.py \
     --model_name_or_path facebook/opt-6.7b \
-    --dataset_name AlekseyKorshuk/dalio-book-handwritten-io-sorted \
+    --dataset_name AlekseyKorshuk/dalio-book-handwritten-io-sorted-v2 \
     --do_train \
     --do_eval \
     --logging_strategy steps \
@@ -556,7 +556,7 @@ deepspeed run_clm_trainer.py \
     --eval_steps 6 \
     --logging_first_step \
     --report_to all \
-    --output_dir /models/6.7b-dalio-book-handwritten-io-constant-3e-7 \
+    --output_dir /models/6.7b-dalio-book-handwritten-io-constant-3e-7-v2 \
     --overwrite_output_dir \
     --num_train_epochs 1 \
     --fp16 \
@@ -568,5 +568,54 @@ deepspeed run_clm_trainer.py \
     --block_size 2048 \
     --overwrite_cache \
     --push_to_hub \
-    --push_to_hub_model_id 6.7b-dalio-book-handwritten-io-constant-3e-7
+    --push_to_hub_model_id 6.7b-dalio-book-handwritten-io-constant-3e-7-v2
 
+deepspeed run_clm_trainer.py \
+    --model_name_or_path facebook/opt-6.7b \
+    --dataset_name AlekseyKorshuk/dalio-book-handwritten-io-sorted-v2 \
+    --do_train \
+    --do_eval \
+    --logging_strategy steps \
+    --logging_steps 6 \
+    --evaluation_strategy steps \
+    --eval_steps 6 \
+    --logging_first_step \
+    --report_to all \
+    --output_dir /models/6.7b-dalio-book-handwritten-io-constant-6e-6-v2 \
+    --overwrite_output_dir \
+    --num_train_epochs 1 \
+    --fp16 \
+    --deepspeed ds_config.json \
+    --per_device_train_batch_size 1 \
+    --per_device_eval_batch_size 1 \
+    --learning_rate 6e-6 \
+    --lr_scheduler_type constant \
+    --block_size 2048 \
+    --overwrite_cache \
+    --push_to_hub \
+    --push_to_hub_model_id 6.7b-dalio-book-handwritten-io-constant-6e-6-v2
+
+deepspeed run_clm_trainer.py \
+    --model_name_or_path facebook/opt-6.7b \
+    --dataset_name AlekseyKorshuk/dalio-book-handwritten-io-sorted-v2 \
+    --do_train \
+    --do_eval \
+    --logging_strategy steps \
+    --logging_steps 6 \
+    --evaluation_strategy steps \
+    --eval_steps 6 \
+    --logging_first_step \
+    --report_to all \
+    --output_dir /models/6.7b-dalio-book-handwritten-io-constant-1e-6-v2 \
+    --overwrite_output_dir \
+    --num_train_epochs 1 \
+    --fp16 \
+    --deepspeed ds_config.json \
+    --per_device_train_batch_size 1 \
+    --per_device_eval_batch_size 1 \
+    --learning_rate 1e-6 \
+    --lr_scheduler_type constant \
+    --block_size 2048 \
+    --overwrite_cache \
+    --push_to_hub \
+    --push_to_hub_model_id 6.7b-dalio-book-handwritten-io-constant-1e-6-v2

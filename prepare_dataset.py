@@ -5,8 +5,31 @@ import torch
 tokenizer = AutoTokenizer.from_pretrained("facebook/opt-6.7b", padding_side="left", pad_token_id=0)
 model = AutoModelForCausalLM.from_pretrained("facebook/opt-6.7b", device_map="auto")
 
-dataset1 = load_dataset("ChaiML/dalio_combined_v1")
-dataset2 = load_dataset("Jellywibble/dalio-finetune-principles_book")
+ds_name = "ChaiML/dalio_combined_v1"
+dataset1 = load_dataset(ds_name)
+
+if "validation" not in dataset1.keys():
+    dataset1["validation"] = load_dataset(
+        ds_name,
+        split=f"train[:{20}%]",
+    )
+    dataset1["train"] = load_dataset(
+        ds_name,
+        split=f"train[{20}%:]",
+    )
+
+ds_name = "Jellywibble/dalio-finetune-principles_book"
+dataset2 = load_dataset(ds_name)
+
+if "validation" not in dataset2.keys():
+    dataset2["validation"] = load_dataset(
+        ds_name,
+        split=f"train[:{20}%]",
+    )
+    dataset2["train"] = load_dataset(
+        ds_name,
+        split=f"train[{20}%:]",
+    )
 
 dataset2_io = DatasetDict(
     {
