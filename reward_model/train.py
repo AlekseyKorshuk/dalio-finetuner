@@ -294,8 +294,8 @@ def main():
     is_regression = custom_args.is_regression
     if is_regression:
         num_labels = 1
-        raw_datasets["train"]["label"] = raw_datasets["train"]["label"].astype("float32")
-        raw_datasets["validation"]["label"] = raw_datasets["validation"]["label"].astype("float32")
+        raw_datasets["train"]["label"] = np.array(raw_datasets["train"]["label"]).astype("float32")
+        raw_datasets["validation"]["label"] = np.array(raw_datasets["validation"]["label"]).astype("float32")
     else:
         # A useful fast method:
         # https://huggingface.co/docs/datasets/package_reference/main_classes.html#datasets.Dataset.unique
